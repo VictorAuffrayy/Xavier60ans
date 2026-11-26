@@ -4,7 +4,7 @@ Quiz interactif façon plateau TV, ambiance Grand Nord.
 
 - **La TV** (un ordinateur branché dessus) affiche les questions, les réponses et le classement.
 - **Les invités** scannent le QR code et répondent sur leur téléphone. Chacun joue pour soi, sans chrono.
-- **Xavier** scanne son propre QR code : son téléphone devient la télécommande. Il choisit la manche, révèle les bonnes réponses, choisit ses réponses préférées aux questions ouvertes et peut contester (+1 / −1 point).
+- **Xavier** scanne son propre QR code : son téléphone devient la télécommande. Il lance les questions (elles s'enchaînent dans l'ordre, manche après manche), révèle les bonnes réponses, choisit ses réponses préférées aux questions ouvertes et peut contester (+1 / −1 point).
 
 Tout tient dans un seul fichier : `index.html`.
 
@@ -19,8 +19,8 @@ Tout tient dans un seul fichier : `index.html`.
 1. Sur l'ordinateur de la TV, ouvre le site puis clique sur **Lancer la soirée**.
 2. Les invités scannent le grand QR code et tapent leur prénom.
 3. Xavier scanne le petit QR code « Télécommande de Xavier ».
-4. Xavier appuie sur **C'est parti !**, puis choisit les manches une par une.
-5. À la fin : **Terminer : afficher le podium**.
+4. Xavier appuie sur **C'est parti !** : la première question s'affiche directement.
+5. Après chaque révélation, **Question suivante**. Les questions s'enchaînent dans l'ordre de l'éditeur, puis le podium s'affiche tout seul à la fin.
 
 En secours, le bouton **🎮 Piloter ici** de l'ordinateur ouvre la même télécommande sur l'écran de l'ordinateur.
 Si la page de la TV se recharge par erreur, **Reprendre la partie** garde les scores, et les invités se reconnectent tout seuls.
@@ -41,6 +41,7 @@ On peut changer de réponse tant que Xavier n'a pas révélé.
 Accueil → **✏️ Modifier les questions**. Tout est enregistré dans le navigateur de l'ordinateur, photos comprises.
 Pour jouer sur un autre ordinateur : **Exporter** ici, puis **Importer** là-bas.
 
+L'ordre des manches et des questions dans l'éditeur (flèches ↑ ↓) est l'ordre du jeu. Les manches vides sont sautées.
 Les manches bonus « Vrai ou faux express », « Photo mystère », « Qui a dit ça ? » et « Le Grand Nord en chiffres » sont vides au départ, à remplir dans l'éditeur.
 
 ## Tester avant la fête

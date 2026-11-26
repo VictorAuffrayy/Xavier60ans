@@ -540,7 +540,7 @@ function tvMode(phase){
 let H = null;
 const SAVEKEY = 'x60-save-v1';
 function readSave(){ try { const s = JSON.parse(store.get(SAVEKEY)); if (s && s.code && Date.now() - s.ts < 4 * 86400000) return s; } catch(e){} return null; }
-function save(){ if (!H) return; store.set(SAVEKEY, JSON.stringify({code:H.code, pin:H.pin, local:H.local, players:[...H.players.values()].map(p => [p.name, p.score]), done:[...H.done], ts:Date.now()})); }
+function save(){ if (!H) return; store.set(SAVEKEY, JSON.stringify({code:H.code, pin:H.pin, local:H.local, players:[...H.players.values()].map(p => [p.name, p.score]), done:[...H.done], mi:H.mi, qi:H.phase === 'question' ? H.qi - 1 : H.qi, ts:Date.now()})); }
 const ranking = () => [...H.players.values()].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
 const curM = () => H.M[H.mi];
 const curQ = () => curM() ? curM().qs[H.qi] : null;
@@ -562,6 +562,7 @@ function startHost(local, resume){
   H = {code, pin:sv ? sv.pin : rid() + rid(), local, players:new Map(), pid2key:new Map(), remotes:new Set(),
        phase:'lobby', M:loadQs().map(m => ({id:m.id || rid(), name:m.name || 'Manche', emoji:m.emoji || '⭐', qs:(m.qs || []).map(normQ).filter(validQ)})),
        mi:-1, qi:-1, qid:null, ans:new Map(), res:null, done:new Set(sv ? sv.done : []), rank:false, xHidden:false, ctl:false};
+  if (sv && Number.isInteger(sv.mi)) { H.mi = sv.mi; H.qi = Number.isInteger(sv.qi) ? sv.qi : -1; }
   if (sv) sv.players.forEach(([name, score]) => { const key = name.toLowerCase(); H.players.set(key, {name, key, score:score | 0, on:false, pid:null}); });
   if (!sv) save();
   const base = location.origin + location.pathname;
@@ -640,7 +641,7 @@ function waitMsg(){
   if (H.phase === 'lobby') return 'Le quiz va bientôt commencer. Regardez la TV !';
   if (H.phase === 'intro') return 'Manche « ' + curM().name + ' » : première question dans un instant…';
   if (H.phase === 'mend') return 'Fin de la manche ! Regardez le classement sur la TV.';
-  return 'Xavier choisit la prochaine manche…';
+  return 'La suite arrive dans un instant…';
 }
 function resFor(p){
   const r = H.res;
@@ -652,17 +653,13 @@ function endFor(p){ return {t:'end', rank:tieRank(p), of:H.players.size, score:p
 function doCmd(m){
   if (!H || !m) return;
   const c = m.c;
-  if (c === 'start' && (H.phase === 'lobby')) { H.phase = 'menu'; SFX.whoosh(); }
+  if (c === 'start' && (H.phase === 'lobby')) advance();
   else if (c === 'lobby' && H.phase !== 'question') { H.phase = 'lobby'; }
   else if (c === 'manche' && ['menu', 'mend', 'podium'].includes(H.phase)) {
     const i = m.i | 0; if (!H.M[i] || !H.M[i].qs.length) return;
     H.mi = i; H.qi = -1; H.res = null; H.ans = new Map(); H.phase = 'intro'; SFX.whoosh();
   }
-  else if (c === 'next' && (H.phase === 'intro' || H.phase === 'reveal')) {
-    H.qi++;
-    if (H.qi < curM().qs.length) askQ();
-    else { H.done.add(curM().id); H.phase = 'mend'; H.res = null; SFX.fanfare(); FX.burst(140); }
-  }
+  else if (c === 'next' && (H.phase === 'intro' || H.phase === 'reveal')) advance();
   else if (c === 'reveal' && H.phase === 'question') { if (!reveal(m)) return; }
   else if (c === 'skip' && H.phase === 'question') { H.res = {type:curQ().type, win:[], skipped:true}; H.phase = 'reveal'; }
   else if (c === 'menu' && H.phase !== 'lobby') { if (H.phase === 'question') H.ans = new Map(); H.phase = 'menu'; H.res = null; }
@@ -683,6 +680,18 @@ function doCmd(m){
   renderTV(); pushX(); save();
 }
 
+/* Enchaîne les questions dans l'ordre, manche après manche, puis le podium. */
+function nextPos(){
+  let mi = H.mi < 0 ? 0 : H.mi, qi = H.mi < 0 ? 0 : H.qi + 1;
+  while (mi < H.M.length && qi >= H.M[mi].qs.length) { mi++; qi = 0; }
+  return mi < H.M.length ? {mi, qi} : null;
+}
+function advance(){
+  const n = nextPos();
+  if (H.mi >= 0 && curM() && (!n || n.mi !== H.mi)) H.done.add(curM().id);
+  if (!n) { H.phase = 'podium'; H.rank = false; H.res = null; renderRank(); SFX.fanfare(); FX.burst(260); setTimeout(() => FX.burst(200), 1300); return; }
+  H.mi = n.mi; H.qi = n.qi; askQ();
+}
 function askQ(){
   H.qid = rid(); H.ans = new Map(); H.res = null; H.phase = 'question';
   SFX.whoosh();
@@ -810,7 +819,7 @@ function xstate(){
   const s = {phase:H.phase, code:H.code, qid:H.qid, rank:H.rank, mi:H.mi, qi:H.qi,
     manches:H.M.map((m, i) => ({i, name:m.name, emoji:m.emoji, n:m.qs.length, done:H.done.has(m.id)})),
     players:ranking().map(p => ({k:p.key, name:p.name, score:p.score, on:p.on, ans:H.ans.has(p.key)})),
-    nans:H.ans.size, non:[...H.players.values()].filter(p => p.on).length};
+    nans:H.ans.size, lastAll:!nextPos(), non:[...H.players.values()].filter(p => p.on).length};
   if (M) { s.mname = M.name; s.memoji = M.emoji; s.mlen = M.qs.length; }
   if (q && (H.phase === 'question' || H.phase === 'reveal')) {
     s.q = {type:q.type, q:q.q, a:q.a, v:q.v, img:!!q.img};
@@ -845,14 +854,11 @@ function renderRemote(root, s, send){
   } else if (s.phase === 'lobby') {
     h = `<div class="xbox"><h2>Salut Xavier ! 👋</h2><p class="xcount"><b>${s.non}</b> ${s.non > 1 ? 'invités connectés' : 'invité connecté'}</p>
       <div class="chips">${s.players.map(p => `<span class="chip ${p.on ? '' : 'off'}">${esc(p.name)}</span>`).join('')}</div>
-      <p class="note">Quand tout le monde a scanné le QR code de la TV, lance le quiz.</p>
-      <button class="btn gold block" data-cmd="start">C’est parti ! ▶</button></div>`;
-  } else if (s.phase === 'menu' || s.phase === 'mend' || s.phase === 'podium') {
-    h = `<div class="xbox">${s.phase === 'mend' ? `<h2>Manche terminée ! 🎉</h2><p class="note">Le classement est sur la TV.</p>` : s.phase === 'podium' ? `<h2>🏆 Le podium est affiché</h2><p class="note">Tu peux encore relancer une manche si tu veux.</p>` : ''}
-      <h2>Choisis la manche</h2>
-      ${s.manches.map(m => `<button class="xmanche ${m.done ? 'done' : ''}" data-manche="${m.i}" ${m.n ? '' : 'disabled'}><span class="em">${esc(m.emoji)}</span><span class="tx">${esc(m.name)}<br><small>${m.n ? plural(m.n, 'question') : 'vide'}${m.done ? ' · ✓ jouée' : ''}</small></span></button>`).join('')}
-      ${s.phase !== 'podium' ? '<button class="btn gold block" data-cmd="podium">🏆 Terminer : afficher le podium</button>' : ''}
-      <button class="btn ghost block" data-cmd="lobby">Réafficher le QR code des invités</button></div>`;
+      <p class="note">${s.mi >= 0 ? 'Les nouveaux invités peuvent scanner le QR code de la TV. On reprend où on en était.' : 'Quand tout le monde a scanné le QR code de la TV, lance la première question.'}</p>
+      <button class="btn gold block" data-cmd="start">${s.mi >= 0 ? 'Reprendre le quiz ▶' : 'C’est parti ! ▶'}</button></div>`;
+  } else if (s.phase === 'podium') {
+    h = `<div class="xbox"><h2>🏆 Le podium est affiché !</h2><p class="note">Toutes les questions sont passées. Joyeux anniversaire ! 🎂</p>
+      <p class="note">Une erreur dans les scores ? Onglet « Scores & contestations » : le podium se met à jour.</p></div>`;
   } else if (s.phase === 'intro') {
     h = `<div class="xbox"><h2>${esc(s.memoji)} ${esc(s.mname)}</h2><p class="note">${plural(s.mlen, 'question')}. Le titre de la manche est sur la TV.</p>
       <button class="btn gold block" data-cmd="next">Première question ▶</button>
@@ -877,15 +883,15 @@ function renderRemote(root, s, send){
       <div class="xq">${esc(q.q)}${q.img ? ' 📷' : ''}</div>
       <p class="xcount">${countTxt(s)}</p>
       ${pick}
-      <div class="row"><button class="btn ghost sm" data-cmd="skip">Passer la question</button><button class="btn ghost sm" data-cmd="menu">Retour aux manches</button></div></div>`;
+      <div class="row"><button class="btn ghost sm" data-cmd="skip">Passer la question</button></div></div>`;
   } else if (s.phase === 'reveal') {
-    const r = s.res, last = s.qi + 1 >= s.mlen;
+    const r = s.res, last = s.lastAll;
     h = `<div class="xbox"><p class="note">${esc(s.memoji)} ${esc(s.mname)} · Question ${s.qi + 1} / ${s.mlen}</p>
       <div class="xq">${esc(s.q.q)}</div>
       <p class="xcount">${r.skipped ? 'Question passée.' : r.names.length ? '+1 point pour : <b>' + r.names.map(esc).join(', ') + '</b>' : 'Personne ne marque de point.'}</p>
       <p class="note">Une erreur ? Onglet « Scores & contestations ».</p>
-      <button class="btn gold block" data-cmd="next">${last ? 'Fin de la manche 🏁' : 'Question suivante ▶'}</button>
-      <button class="btn ghost block" data-cmd="menu">Retour aux manches</button></div>`;
+      <button class="btn gold block" data-cmd="next">${last ? 'Voir le podium 🏆' : 'Question suivante ▶'}</button>
+      <button class="btn ghost block" data-cmd="lobby">Réafficher le QR code des invités</button></div>`;
   }
   root.innerHTML = tabs + h;
   root.onclick = e => {
