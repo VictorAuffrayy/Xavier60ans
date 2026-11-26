@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cut">
+<meta name="theme-color" content="#050d1f">
+<title>Le Grand Quiz des 60 ans de Xavier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--night:#050d1f;--deep:#0b2147;--ice:#eaf7ff;--glass:rgba(234,247,255,.08);--glass2:rgba(234,247,255,.14);--line:rgba(234,247,255,.2);--glacier:#7fd6ff;--green:#3ddc97;--violet:#9d7bff;--sun:#ffc35c;--red:#ff6b7a;--ink:#06142c;--muted:rgba(234,247,255,.7)}
+*{box-sizing:border-box}
+html{background:var(--night)}
+html,body{margin:0;min-height:100%;color:var(--ice);font-family:Fredoka,system-ui,-apple-system,sans-serif;-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;min-height:100dvh;overflow-x:hidden}
+[hidden]{display:none!important}
+.sky{position:fixed;inset:0;z-index:-3;background:radial-gradient(130% 90% at 50% 115%,#16457a 0%,#0b2147 42%,var(--night) 100%)}
+.aurora{position:fixed;left:-15%;right:-15%;top:-25%;height:80vh;z-index:-2;pointer-events:none;filter:blur(70px);opacity:.5}
+.aurora i{position:absolute;border-radius:50%;animation:drift 20s ease-in-out infinite alternate}
+.aurora i:nth-child(1){width:60vw;height:28vh;left:5%;top:30%;background:#2fe0a0}
+.aurora i:nth-child(2){width:50vw;height:24vh;left:38%;top:18%;background:#7b5cff;animation-duration:26s}
+.aurora i:nth-child(3){width:42vw;height:22vh;left:66%;top:36%;background:#21b5e8;animation-duration:31s}
+@keyframes drift{0%{transform:translate(0,0) scale(1) rotate(-8deg)}100%{transform:translate(-9vw,7vh) scale(1.3) rotate(9deg)}}
+#snow{position:fixed;inset:0;z-index:-1;pointer-events:none;width:100%;height:100%}
+.peaks{position:fixed;left:0;right:0;bottom:0;height:22vh;z-index:-1;pointer-events:none;opacity:.55}
+.screen{min-height:100vh;min-height:100dvh;padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center}
+h1,h2,h3{margin:0;font-weight:700}
+.title{font-family:'Bowlby One',Fredoka,sans-serif;font-weight:400;font-size:clamp(34px,6vw,84px);line-height:1.02;letter-spacing:.5px;text-shadow:0 0 30px rgba(127,214,255,.45),0 4px 0 rgba(0,0,0,.25)}
+.title .sixty{display:inline-block;color:var(--sun);text-shadow:0 0 30px rgba(255,195,92,.6),0 4px 0 rgba(0,0,0,.25)}
+.sub{font-size:clamp(17px,2vw,26px);color:var(--muted);max-width:900px;line-height:1.35;margin:0}
+.btn{appearance:none;border:0;border-radius:16px;padding:15px 26px;min-height:54px;font:600 19px Fredoka,sans-serif;cursor:pointer;color:var(--ink);background:linear-gradient(180deg,#f3fbff,#bfe7ff);box-shadow:0 6px 0 #6fa9cf,0 10px 24px rgba(0,0,0,.3);transition:transform .1s,filter .15s}
+.btn:active{transform:translateY(3px);box-shadow:0 3px 0 #6fa9cf}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn.gold{background:linear-gradient(180deg,#ffe2a1,#ffb93f);box-shadow:0 6px 0 #c47d12,0 10px 24px rgba(0,0,0,.3)}
+.btn.green{background:linear-gradient(180deg,#a8f5d1,#3ddc97);box-shadow:0 6px 0 #1f9e69,0 10px 24px rgba(0,0,0,.3)}
+.btn.ghost{background:var(--glass);color:var(--ice);box-shadow:none;border:1.5px solid var(--line)}
+.btn.sm{min-height:40px;padding:8px 14px;font-size:15px;border-radius:12px}
+.btn.danger{background:rgba(255,107,122,.16);color:#ffc2c9;box-shadow:none;border:1.5px solid rgba(255,107,122,.4)}
+.btn.block{width:100%}
+.row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.col{display:flex;flex-direction:column;gap:12px;width:100%}
+.panel{background:var(--glass);border:1.5px solid var(--line);border-radius:22px;padding:18px 20px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);text-align:left}
+.panel h3{font-size:20px;margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--glass2);border:1px solid var(--line);border-radius:99px;padding:6px 14px;font-weight:600;font-size:17px;animation:pop .35s ease-out}
+.chip.off{opacity:.45}
+.chip.win{background:rgba(61,220,151,.22);border-color:var(--green)}
+@keyframes pop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+input,textarea,select{font:500 18px Fredoka,sans-serif;color:var(--ink);background:#f3fbff;border:2px solid transparent;border-radius:14px;padding:13px 15px;width:100%;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--glacier);box-shadow:0 0 0 4px rgba(127,214,255,.3)}
+textarea{resize:vertical;min-height:54px}
+.flake{font-size:64px;animation:spin 9s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err{color:#ffb3bd;min-height:22px;margin:0}
+
+/* ---------- Écran TV ---------- */
+#topbar{position:fixed;top:12px;right:14px;z-index:20;display:flex;gap:8px;align-items:center}
+#topbar .code{background:var(--glass2);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-weight:600}
+#topbar button{appearance:none;border:1px solid var(--line);background:var(--glass2);color:var(--ice);border-radius:12px;height:42px;min-width:42px;padding:0 12px;font:600 15px Fredoka,sans-serif;cursor:pointer}
+.lobby{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:3vw;width:min(100%,1500px);align-items:center}
+.lobby .main{display:flex;flex-direction:column;align-items:center;gap:14px}
+.lobby .title{font-size:clamp(30px,3.6vw,64px)}
+.qrbox{background:#fff;padding:16px;border-radius:24px;box-shadow:0 0 0 6px rgba(127,214,255,.35),0 0 60px rgba(127,214,255,.35)}
+#qr,#xqr{display:flex;align-items:center;justify-content:center}
+#qr img,#qr canvas{width:min(34vh,300px)!important;height:auto!important}
+#xqr img,#xqr canvas{width:130px!important;height:auto!important}
+.lobby .big{font-size:clamp(22px,2.4vw,38px);font-weight:700;margin:0}
+.urlline{font-size:clamp(15px,1.4vw,21px);color:var(--muted);margin:0}
+.urlline b{color:var(--ice)}
+.side{display:flex;flex-direction:column;gap:16px}
+.rules ul{margin:0;padding-left:20px;line-height:1.45;font-size:clamp(14px,1.15vw,18px)}
+.rules li{margin:3px 0}
+.rules .last{margin:10px 0 0;font-style:italic;color:var(--sun);font-size:clamp(14px,1.1vw,17px)}
+.xav{display:flex;gap:16px;align-items:center}
+.xav .qrwrap{background:#fff;padding:8px;border-radius:14px;flex:none}
+.xav p{margin:4px 0;color:var(--muted);font-size:15px}
+.xav .ok{color:var(--green);font-weight:700;font-size:19px}
+.localbox{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+#s-game{justify-content:flex-start;padding:70px 4vw 4vh}
+.tvh{font-size:clamp(28px,3.4vw,56px);font-weight:700;text-shadow:0 0 24px rgba(127,214,255,.4)}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px;width:min(100%,1500px);margin-top:2vh}
+.mcard{background:var(--glass);border:1.5px solid var(--line);border-radius:22px;padding:22px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
+.mcard .em{font-size:clamp(40px,4vw,60px);line-height:1.1}
+.mcard b{font-size:clamp(19px,1.7vw,26px);line-height:1.15}
+.mcard small{color:var(--muted);font-size:16px}
+.mcard.done{opacity:.5}
+.mcard.done::after{content:'✓ jouée';position:absolute;top:10px;right:12px;background:var(--green);color:var(--ink);font-weight:700;font-size:13px;border-radius:99px;padding:3px 9px}
+.mcard.empty{opacity:.35;border-style:dashed}
+.intro{display:flex;flex-direction:column;align-items:center;gap:14px;margin:auto;animation:zoomin .6s cubic-bezier(.2,1.4,.4,1)}
+.intro .em{font-size:clamp(90px,13vw,190px);line-height:1}
+.intro .kick{font-size:clamp(18px,2vw,28px);letter-spacing:4px;text-transform:uppercase;color:var(--glacier);font-weight:700}
+.intro h1{font-family:'Bowlby One',Fredoka,sans-serif;font-weight:400;font-size:clamp(40px,6vw,96px);line-height:1.05;text-shadow:0 0 30px rgba(127,214,255,.5)}
+.intro p{font-size:clamp(18px,2vw,28px);color:var(--muted);margin:0}
+@keyframes zoomin{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+.qhead{display:flex;justify-content:space-between;gap:20px;width:min(100%,1600px);font-size:clamp(16px,1.6vw,24px);color:var(--glacier);font-weight:600}
+.qtext{font-size:clamp(28px,3.6vw,62px);line-height:1.15;max-width:1500px;text-shadow:0 2px 20px rgba(0,0,0,.35);animation:zoomin .45s ease-out}
+.qimg{max-width:min(90vw,1100px);max-height:38vh;border-radius:20px;box-shadow:0 0 0 4px rgba(255,255,255,.7),0 14px 40px rgba(0,0,0,.5);object-fit:contain;background:#fff}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:min(100%,1500px)}
+.opts.n5 .opt:last-child{grid-column:1/-1}
+.opt{--c:#7fd6ff;display:flex;background:rgba(127,214,255,.16);border:2px solid rgba(127,214,255,.5);align-items:center;gap:16px;text-align:left;background:linear-gradient(135deg,color-mix(in srgb,var(--c) 32%,transparent),rgba(255,255,255,.05));border:2px solid color-mix(in srgb,var(--c) 70%,transparent);border-radius:20px;padding:16px 20px;font-size:clamp(19px,2vw,32px);font-weight:600;line-height:1.2;transition:opacity .4s,transform .4s}
+.lt{--c:#7fd6ff;flex:none;display:inline-flex;align-items:center;justify-content:center;width:1.9em;height:1.9em;border-radius:14px;background:var(--c);color:var(--ink);font-weight:700}
+.opt .tx{flex:1}
+.opt .vc{flex:none;font-size:.8em;background:rgba(0,0,0,.3);border-radius:99px;padding:4px 14px}
+.opt.dim{opacity:.28;transform:scale(.97)}
+.opt.ok{border-color:#fff;box-shadow:0 0 0 4px var(--c),0 0 40px var(--c);transform:scale(1.03);background:linear-gradient(135deg,color-mix(in srgb,var(--c) 60%,transparent),rgba(255,255,255,.1))}
+.opt.ok .tx::after{content:'  ✓'}
+.hint{font-size:clamp(22px,2.6vw,40px);background:var(--glass);border:2px dashed var(--line);border-radius:24px;padding:28px 34px;max-width:1300px;line-height:1.3}
+.qfoot{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:12px;width:min(100%,1500px)}
+.count{font-size:clamp(20px,2vw,32px);font-weight:700}
+.count b{color:var(--sun);font-size:1.25em}
+.winners{display:flex;flex-direction:column;align-items:center;gap:10px}
+.winners .lab{font-size:clamp(20px,2vw,30px);font-weight:700;color:var(--green)}
+.winners .chip{font-size:clamp(16px,1.5vw,22px)}
+.nobody{font-size:clamp(22px,2.4vw,36px);font-weight:700;color:var(--glacier)}
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px;width:min(100%,1600px)}
+.ac{background:var(--glass);border:1.5px solid var(--line);border-radius:18px;padding:14px 16px;text-align:left;display:flex;flex-direction:column;gap:8px;animation:pop .4s ease-out both}
+.ac p{margin:0;font-size:clamp(17px,1.6vw,25px);line-height:1.25;font-weight:600}
+.ac span{color:var(--muted);font-size:clamp(14px,1.2vw,18px)}
+.ac.fav{background:linear-gradient(135deg,rgba(255,195,92,.35),rgba(255,195,92,.08));border-color:var(--sun);box-shadow:0 0 30px rgba(255,195,92,.35);order:-1}
+.ac.fav span{color:var(--sun);font-weight:700}
+.ac.dimmed{opacity:.55}
+.bignum{font-family:'Bowlby One',Fredoka,sans-serif;font-size:clamp(70px,11vw,170px);line-height:1;color:var(--sun);text-shadow:0 0 40px rgba(255,195,92,.55);animation:zoomin .5s cubic-bezier(.2,1.4,.4,1)}
+.guesses{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:1500px}
+.guesses .chip b{color:var(--glacier);margin-left:6px}
+.guesses .chip.win b{color:var(--green)}
+.rank{display:flex;flex-direction:column;gap:9px;width:min(100%,900px)}
+.rk{display:flex;align-items:center;gap:14px;background:var(--glass);border:1.5px solid var(--line);border-radius:16px;padding:10px 18px;font-size:clamp(18px,1.8vw,28px);font-weight:600;animation:pop .4s ease-out both}
+.rk .pos{width:2.1em;text-align:center;font-weight:700;color:var(--glacier)}
+.rk .nm{flex:1;text-align:left}
+.rk .sc{font-weight:700;color:var(--sun)}
+.rk.top1{border-color:var(--sun);background:rgba(255,195,92,.15)}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:2vw;width:min(100%,1200px);margin-top:3vh}
+.pod{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;animation:zoomin .7s cubic-bezier(.2,1.4,.4,1) both}
+.pod .nm{font-size:clamp(20px,2.3vw,38px);font-weight:700}
+.pod .md{font-size:clamp(40px,5vw,80px)}
+.pod .blk{width:100%;border-radius:20px 20px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:16px;font-family:'Bowlby One',Fredoka,sans-serif;font-size:clamp(26px,3vw,50px);color:var(--ink)}
+.pod.p1 .blk{height:30vh;background:linear-gradient(180deg,#ffe2a1,#ffb93f)}
+.pod.p2 .blk{height:21vh;background:linear-gradient(180deg,#f3fbff,#a9cde6)}
+.pod.p3 .blk{height:15vh;background:linear-gradient(180deg,#ffd0b0,#d98b5b)}
+.pod.p1{animation-delay:.9s}.pod.p2{animation-delay:.45s}
+.crown{font-size:clamp(24px,3vw,46px);font-weight:700;color:var(--sun);text-shadow:0 0 30px rgba(255,195,92,.6)}
+#rank-ov{position:fixed;inset:0;z-index:30;background:rgba(5,13,31,.88);backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:4vh 4vw}
+#toast{position:fixed;left:50%;top:14vh;transform:translateX(-50%);z-index:40;background:linear-gradient(135deg,#ffe2a1,#ffb93f);color:var(--ink);font-weight:700;font-size:clamp(22px,2.6vw,42px);border-radius:22px;padding:18px 34px;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:toast 3.4s ease forwards;text-align:center;max-width:90vw}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,-30px) scale(.8)}10%{opacity:1;transform:translate(-50%,0) scale(1.05)}15%{transform:translate(-50%,0) scale(1)}85%{opacity:1}100%{opacity:0;transform:translate(-50%,-10px)}}
+#ctl{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);z-index:35;background:rgba(6,20,44,.97);border-left:1.5px solid var(--line);overflow-y:auto;padding:14px;text-align:left;box-shadow:-20px 0 60px rgba(0,0,0,.5)}
+#ctl .close{float:right}
+
+/* ---------- Téléphones (invités + télécommande) ---------- */
+.phone{justify-content:flex-start;padding:18px 16px 32px;max-width:560px;margin:0 auto;width:100%}
+.phead{display:flex;justify-content:space-between;align-items:center;width:100%;font-weight:600;color:var(--muted);font-size:15px}
+.phead b{color:var(--ice)}
+.pscore{background:var(--glass2);border:1px solid var(--line);border-radius:99px;padding:5px 12px;color:var(--sun);font-weight:700}
+.pq{font-size:21px;font-weight:600;line-height:1.25;margin:6px 0}
+.pbtns{display:flex;flex-direction:column;gap:11px;width:100%}
+.pb{--c:#7fd6ff;appearance:none;background:rgba(127,214,255,.16);border:2px solid rgba(127,214,255,.5);display:flex;align-items:center;gap:12px;width:100%;text-align:left;border-radius:16px;padding:12px 14px;min-height:62px;font:600 18px Fredoka,sans-serif;color:var(--ice);cursor:pointer;background:color-mix(in srgb,var(--c) 24%,transparent);border:2px solid color-mix(in srgb,var(--c) 65%,transparent)}
+.pb.on{background:var(--c);color:var(--ink);box-shadow:0 0 0 3px #fff,0 0 24px var(--c)}
+.pb.on .lt{background:#fff}
+.sent{color:var(--green);font-weight:600;margin:0;font-size:16px}
+.pres{display:flex;flex-direction:column;align-items:center;gap:12px;margin:auto 0}
+.pres .em{font-size:84px;line-height:1;animation:zoomin .5s cubic-bezier(.2,1.4,.4,1)}
+.pres h2{font-size:28px;line-height:1.2}
+.pres p{margin:0;color:var(--muted);font-size:18px}
+.wait{display:flex;flex-direction:column;align-items:center;gap:14px;margin:auto 0}
+.wait h2{font-size:26px}
+.wait p{margin:0;color:var(--muted);font-size:18px;line-height:1.35}
+.ptoast{position:fixed;left:12px;right:12px;bottom:16px;z-index:40;background:linear-gradient(135deg,#ffe2a1,#ffb93f);color:var(--ink);font-weight:700;font-size:18px;border-radius:16px;padding:14px;text-align:center;animation:toast 3.4s ease forwards;transform:none!important}
+
+.xtabs{display:flex;gap:8px;width:100%}
+.xtabs button{flex:1;appearance:none;border:1.5px solid var(--line);background:var(--glass);color:var(--ice);border-radius:12px;padding:10px;font:600 16px Fredoka,sans-serif;cursor:pointer}
+.xtabs button.on{background:var(--ice);color:var(--ink)}
+.xbox{width:100%;display:flex;flex-direction:column;gap:12px;text-align:left}
+.xbox h2{font-size:22px}
+.xbox .note{color:var(--muted);font-size:15px;margin:0}
+.xq{background:var(--glass);border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;font-size:18px;font-weight:600;line-height:1.25}
+.xcount{font-size:17px;font-weight:600}
+.xcount b{color:var(--sun)}
+.xopt{--c:#7fd6ff;appearance:none;background:rgba(127,214,255,.14);border:2px solid rgba(127,214,255,.45);display:flex;align-items:center;gap:12px;width:100%;text-align:left;border-radius:14px;padding:10px 12px;min-height:56px;font:600 17px Fredoka,sans-serif;color:var(--ice);cursor:pointer;background:color-mix(in srgb,var(--c) 18%,transparent);border:2px solid color-mix(in srgb,var(--c) 55%,transparent)}
+.xopt .tx{flex:1}
+.xopt .n{flex:none;background:rgba(0,0,0,.3);border-radius:99px;padding:3px 10px;font-size:14px}
+.xopt.sel{background:color-mix(in srgb,var(--green) 40%,transparent);border-color:var(--green);box-shadow:0 0 0 2px var(--green)}
+.xopt.sel .tx::before{content:'✓ ';color:var(--green)}
+.xans{--c:#ffc35c}
+.xans.sel{background:rgba(255,195,92,.3);border-color:var(--sun);box-shadow:0 0 0 2px var(--sun)}
+.xans.sel .tx::before{content:'❤️ '}
+.xmanche{appearance:none;display:flex;align-items:center;gap:12px;width:100%;text-align:left;border-radius:14px;padding:12px 14px;font:600 17px Fredoka,sans-serif;color:var(--ice);cursor:pointer;background:var(--glass);border:1.5px solid var(--line)}
+.xmanche .em{font-size:28px}
+.xmanche .tx{flex:1}
+.xmanche small{color:var(--muted);font-weight:500}
+.xmanche.done{opacity:.55}
+.xmanche:disabled{opacity:.3;cursor:not-allowed}
+.xpl{display:flex;align-items:center;gap:8px;background:var(--glass);border:1.5px solid var(--line);border-radius:14px;padding:8px 10px}
+.xpl .nm{flex:1;font-weight:600}
+.xpl .nm small{color:var(--muted);font-weight:500}
+.xpl .sc{font-weight:700;color:var(--sun);min-width:34px;text-align:center;font-size:19px}
+.xpl button{appearance:none;width:46px;height:42px;border-radius:12px;border:0;font:700 18px Fredoka,sans-serif;cursor:pointer}
+.xpl .minus{background:rgba(255,107,122,.25);color:#ffc2c9}
+.xpl .plus{background:rgba(61,220,151,.3);color:#c6ffe5}
+
+/* ---------- Éditeur ---------- */
+#s-edit{justify-content:flex-start;padding:24px 16px 60px}
+.edwrap{width:min(100%,980px);display:flex;flex-direction:column;gap:18px;text-align:left}
+.edtop{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.edtop h1{font-size:30px}
+#ed-st{color:var(--green);font-weight:600;min-height:22px}
+.edm{background:var(--glass);border:1.5px solid var(--line);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.edm-h{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.edm-h .em-in{width:64px;text-align:center;font-size:24px;padding:8px}
+.edm-h .name-in{flex:1;min-width:200px;font-weight:600}
+.edm-h .cnt{color:var(--muted);font-weight:600}
+.edhint{margin:0;color:var(--muted);font-size:15px;line-height:1.35}
+.edq{background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:9px}
+.edq-h{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.edq-h select{width:auto;flex:1;min-width:180px;padding:9px 12px;font-size:16px}
+.edans{display:flex;gap:8px;align-items:center}
+.edans .lt{width:36px;height:36px;font-size:16px}
+.edans input{padding:9px 12px;font-size:16px}
+.edq label{color:var(--muted);font-size:15px;display:flex;flex-direction:column;gap:6px}
+.edimg{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.edimg img{max-height:90px;border-radius:10px}
+.edadd{display:flex;gap:8px;flex-wrap:wrap}
+.ibtn{appearance:none;border:1.5px solid var(--line);background:var(--glass2);color:var(--ice);border-radius:10px;height:38px;min-width:38px;padding:0 10px;font:600 15px Fredoka,sans-serif;cursor:pointer}
+.ibtn.danger{border-color:rgba(255,107,122,.45);color:#ffc2c9}
+
+@media (max-width:900px){.lobby{grid-template-columns:minmax(0,1fr)}.opts{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="sky"></div>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+<canvas id="snow" aria-hidden="true"></canvas>
+<svg class="peaks" viewBox="0 0 1440 220" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0 220 L0 150 L120 90 L210 140 L330 40 L430 130 L520 95 L640 160 L760 60 L880 140 L990 85 L1100 150 L1210 70 L1330 135 L1440 100 L1440 220Z" fill="#0d2a52"/>
+  <path d="M330 40 L300 68 L318 64 L336 76 L352 60 L370 72Z M760 60 L732 86 L752 82 L770 94 L784 78 L800 88Z M1210 70 L1184 94 L1202 90 L1220 100 L1234 86 L1248 96Z" fill="#dff3ff" opacity=".85"/>
+  <path d="M0 220 L0 185 L160 150 L300 190 L460 140 L600 185 L780 145 L940 192 L1100 150 L1260 188 L1440 155 L1440 220Z" fill="#081a38"/>
+</svg>
+
+<div id="topbar" hidden>
+  <span class="code" id="tb-code"></span>
+  <button id="tb-ctl" title="Piloter depuis cet ordinateur">🎮 Piloter ici</button>
+  <button id="tb-rank" title="Classement">🏆</button>
+  <button id="tb-snd" title="Son">🔊</button>
+</div>
+
+<!-- Accueil (ordinateur branché à la TV) -->
+<section class="screen" id="s-home" hidden>
+  <div class="flake">❄️</div>
+  <h1 class="title">Le Grand Quiz<br>des <span class="sixty">60 ans</span> de Xavier</h1>
+  <p class="sub">Le Cheval de Feu est lâché ! 60 ans, un aventurier des pôles, un organisateur qui s’ignore, un Sagittaire qui a toujours raison… et bientôt un retraité !</p>
+  <div class="row">
+    <button class="btn gold" id="h-start">Lancer la soirée</button>
+    <button class="btn" id="h-resume" hidden>Reprendre la partie</button>
+  </div>
+  <div class="row">
+    <button class="btn ghost sm" id="h-edit">✏️ Modifier les questions</button>
+    <button class="btn ghost sm" id="h-local">🧪 Tester sur cet ordi</button>
+    <button class="btn ghost sm" id="h-guest">📱 Je suis invité</button>
+  </div>
+</section>
+
+<!-- Salle d'attente sur la TV -->
+<section class="screen" id="s-lobby" hidden>
+  <div class="lobby">
+    <div class="main">
+      <h1 class="title">Le Grand Quiz des <span class="sixty">60 ans</span> de Xavier</h1>
+      <div class="qrbox"><div id="qr"></div></div>
+      <p class="big">📱 Scannez pour jouer !</p>
+      <p class="urlline" id="l-url"></p>
+      <p class="urlline" id="l-status">Connexion au serveur…</p>
+      <div class="localbox" id="l-local" hidden></div>
+    </div>
+    <div class="side">
+      <div class="panel"><h3>👥 Joueurs connectés : <span id="l-n">0</span></h3><div class="chips" id="l-players"><span style="color:var(--muted)">En attente des premiers joueurs…</span></div></div>
+      <div class="panel rules">
+        <h3>📜 Règles du jeu</h3>
+        <ul>
+          <li>Chacun joue pour soi, sur son téléphone. Pas de chrono : prenez votre temps !</li>
+          <li>1 point par bonne réponse.</li>
+          <li>Xavier détient les bonnes réponses : c’est lui qui les révèle depuis sa télécommande.</li>
+          <li>Questions ouvertes : chacun écrit ce qu’il veut, et Xavier choisit ses réponses préférées (+1 point chacune).</li>
+          <li>Le gagnant remporte le titre de « Meilleur connaisseur de Xavier ».</li>
+        </ul>
+        <p class="last">Et surtout, Xavier a le droit de contester les réponses… mais pas de changer les règles en cours de partie, même s’il a toujours raison !</p>
+      </div>
+      <div class="panel xav" id="l-xav">
+        <div class="qrwrap" id="xqr-wrap"><div id="xqr"></div></div>
+        <div>
+          <h3 style="margin:0">🎮 Télécommande de Xavier</h3>
+          <p id="xav-txt">Seul Xavier scanne ce QR code : il pilote tout le quiz depuis son téléphone.</p>
+          <button class="btn ghost sm" id="xav-show" hidden>Réafficher son QR code</button>
+        </div>
+      </div>
+      <button class="btn gold" id="l-go">C’est parti !</button>
+    </div>
+  </div>
+</section>
+
+<!-- Jeu sur la TV -->
+<section class="screen" id="s-game" hidden><div id="game" style="display:contents"></div></section>
+
+<!-- Téléphone d'un invité -->
+<section class="screen phone" id="s-player" hidden></section>
+
+<!-- Téléphone de Xavier -->
+<section class="screen phone" id="s-remote" hidden></section>
+
+<!-- Éditeur -->
+<section class="screen" id="s-edit" hidden>
+  <div class="edwrap">
+    <div class="edtop">
+      <h1>✏️ Les questions</h1>
+      <div class="row" style="justify-content:flex-end">
+        <button class="btn ghost sm" id="ed-addm">+ Manche</button>
+        <button class="btn ghost sm" id="ed-exp">⬇️ Exporter</button>
+        <label class="btn ghost sm" style="display:inline-flex;align-items:center">⬆️ Importer<input type="file" id="ed-imp" accept=".json,application/json" hidden></label>
+        <button class="btn ghost sm" id="ed-reset">Remettre les questions de base</button>
+        <button class="btn sm" id="ed-back">Terminé</button>
+      </div>
+    </div>
+    <p class="edhint">Tout est enregistré automatiquement sur cet ordinateur (et ses photos aussi). Pour jouer sur un autre ordinateur, clique sur « Exporter » ici, puis « Importer » là-bas. Les questions sans texte, ou avec moins de 2 réponses, sont ignorées pendant le jeu. <span id="ed-st"></span></p>
+    <div id="ed-list" class="col"></div>
+  </div>
+</section>
+
+<div id="rank-ov" hidden></div>
+<aside id="ctl" hidden></aside>
+
+<script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rid = () => Math.random().toString(36).slice(2, 10);
+const clone = o => JSON.parse(JSON.stringify(o));
+const show = id => { document.querySelectorAll('.screen').forEach(e => e.hidden = e.id !== id); window.scrollTo(0, 0); };
+const params = new URLSearchParams(location.search);
+const BROKER = 'wss://broker.hivemq.com:8884/mqtt';
+const TOPIC = 'xavier60ans/v1/';
+const LETTERS = 'ABCDE';
+const OPTC = ['#3ddc97', '#4cc9f0', '#9d7bff', '#ffc35c', '#ff7aa8'];
+const store = { get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }, set(k, v){ try { localStorage.setItem(k, v); return true; } catch(e){ return false; } }, del(k){ try { localStorage.removeItem(k); } catch(e){} } };
+const sstore = { get(k){ try { return sessionStorage.getItem(k); } catch(e){ return null; } }, set(k, v){ try { sessionStorage.setItem(k, v); } catch(e){} } };
+const plural = (n, s, p) => n + ' ' + (n > 1 ? (p || s + 's') : s);
+
+/* ---------- Les questions de base (document « Le Grand Quiz des 60 ans de Xavier ») ---------- */
+const DEFAULT = [
+  {id:'m1', name:'Le phénomène Xavier', emoji:'🐎', qs:[
+    {type:'qcm', q:'Dans la fratrie, quelle est la particularité de Xavier ?', a:["C'est l'aîné et le préféré.", "C'est le petit dernier, seul garçon, arrivé 15 ans après Anne.", "C'est le deuxième garçon.", "C'est le seul à avoir quitté la maison."]},
+    {type:'qcm', q:'Xavier est né sous le signe chinois du Cheval de Feu. Quelle est la conséquence la plus probable ?', a:['Il galope partout comme un cheval fou.', 'Il est têtu comme une mule.', 'Il est malin comme un singe.', 'Il est fier comme un paon.']},
+    {type:'qcm', q:"Quelle est la grande spécialité de Xavier, même s'il prétend le contraire ?", a:['Se faire inviter.', 'Organiser des sorties.', 'Arriver les mains dans les poches.', 'Suivre les autres sans discuter.']},
+    {type:'qcm', q:'Quelle est sa tenue vestimentaire de prédilection ?', a:['Le costume trois-pièces.', 'Le jean et le pull en cachemire.', 'La chemisette à manches courtes.', 'Le jogging intégral.']}
+  ]},
+  {id:'m2', name:"L'appel du Grand Nord", emoji:'🧭', qs:[
+    {type:'qcm', q:'Si Xavier devait choisir sa destination de vacances idéale, ce serait :', a:['Les Seychelles.', 'Le Grand Canyon.', 'La planète Mars.', 'Le Grand Nord, par -20 °C !']},
+    {type:'qcm', q:'Que fait exactement Xavier au LNE ?', a:['Il travaille dans un laboratoire.', 'Il contrôle la qualité.', 'Il est ingénieur.', 'Il occupe une fonction tellement mystérieuse que personne ne sait vraiment.']},
+    {type:'qcm', q:'Quel moyen de transport affectionne-t-il particulièrement lors de ses aventures nordiques ?', a:['Le scooter des neiges.', 'Le traîneau à chiens.', 'Le camping-car.', 'Le vélo électrique.']},
+    {type:'qcm', q:'Quelle décision Xavier a-t-il prise au cours de sa vie professionnelle ?', a:["Partir travailler à l'étranger.", 'Prendre une année sabbatique.', 'Changer complètement de métier.', 'Devenir indépendant.']}
+  ]},
+  {id:'m3', name:'Le sportif tous terrains', emoji:'🏸', qs:[
+    {type:'qcm', q:'Quel sport de grimpe pratique également Xavier ?', a:['Le saut à la perche.', "L'escalade.", 'Le trampoline.', "L'alpinisme en chambre."]},
+    {type:'qcm', q:'Quel sport de raquette occupe une bonne partie de son temps libre ?', a:['Le tennis.', 'Le squash.', 'Le badminton.', 'Le ping-pong.']},
+    {type:'qcm', q:'Quel est son rôle au sein du Versailles Badminton ?', a:['Simple adhérent discret.', 'Président à vie.', "Membre du bureau, toujours prêt à s'investir.", 'Ramasseur de volants.']},
+    {type:'qcm', q:'Lorsqu’il part en randonnée avec ses amis ou les membres du CAF, Xavier est plutôt :', a:['Celui qui suit tranquillement le groupe.', 'Celui qui organise, entraîne tout le monde et choisit le parcours.', 'Celui qui attend au refuge.', 'Celui qui se perd systématiquement.']},
+    {type:'qcm', q:"Quel talent étonnant Xavier peut-il sortir de son chapeau lors d'une soirée ?", a:['Imiter le cri du loup.', 'Imiter à la perfection la chouette.', 'Siffler comme un merle.', 'Parler le Fourchelangue !']}
+  ]},
+  {id:'m4', name:'Les petits secrets de Xavier', emoji:'🤫', qs:[
+    {type:'qcm', q:"Quelle tenue improbable lui est-il déjà arrivé de porter pour aller travailler ?", a:['Un pantalon de ski.', 'Un short Adidas.', 'Un maillot de bain.', 'Une chemise à paillettes.']},
+    {type:'qcm', q:'Sur un vide-grenier, quel est le véritable plaisir de Xavier ?', a:['Acheter sans compter.', "Négocier jusqu'au dernier centime.", 'Se promener sans rien acheter.', 'Vendre les affaires des autres.']},
+    {type:'qcm', q:'De quel groupe un peu mystérieux Xavier est-il un membre actif ?', a:['Les Marmottes.', 'Les Zèbres.', 'Les Pingouins.', 'Les Castors.']},
+    {type:'qcm', q:'Quelle est la chose dont Xavier ne pourrait absolument pas se passer ?', a:['Sa dose quotidienne de sport.', 'Son canapé.', 'Ses jeux vidéo.', 'Son téléphone.']},
+    {type:'qcm', q:'Quelle est sa pointure de chaussures ?', a:['40', '42', '43', '45']},
+    {type:'qcm', q:'Depuis combien de temps Xavier partage-t-il sa vie avec Gisèle ?', a:['15 ans', '18 ans', '24 ans', '30 ans']}
+  ]},
+  {id:'m5', name:'Le grand saut vers la retraite !', emoji:'🏖️', qs:[
+    {type:'open', q:'Une fois à la retraite, quelle sera selon vous la nouvelle grande activité de Xavier ?'}
+  ]},
+  {id:'m6', name:'Question bonus : Xavier à 70 ans !', emoji:'🎂', qs:[
+    {type:'open', q:'Dans 10 ans, où retrouvera-t-on Xavier ?'}
+  ]},
+  {id:'b1', name:'Vrai ou faux express', emoji:'❄️', hint:'Ajoute des affirmations sur Xavier avec « + Vrai / Faux ». Xavier révèle si c’est vrai.', qs:[]},
+  {id:'b2', name:'Photo mystère', emoji:'📸', hint:'Ajoute une photo à chaque question (Xavier enfant, en expédition…). La photo s’affiche sur la TV.', qs:[]},
+  {id:'b3', name:'Qui a dit ça ?', emoji:'💬', hint:'Mets la phrase culte dans la question, et en réponses la bonne personne + 3 autres.', qs:[]},
+  {id:'b4', name:'Le Grand Nord en chiffres', emoji:'🌡️', hint:'Utilise « + Nombre » : chacun tape un nombre, le plus proche gagne. Mets la bonne valeur, ou laisse vide et Xavier la tapera.', qs:[]}
+];
+
+const QKEY = 'x60-questions-v1';
+function loadQs(){ try { const s = JSON.parse(store.get(QKEY)); if (Array.isArray(s) && s.length) return s; } catch(e){} return clone(DEFAULT); }
+function saveQs(qs){ return store.set(QKEY, JSON.stringify(qs)); }
+const TYPES = {qcm:'Choix multiples', vf:'Vrai / Faux', open:'Réponse libre (Xavier choisit)', nombre:'Nombre à deviner (le plus proche gagne)'};
+function normQ(q){
+  const type = TYPES[q.type] ? q.type : 'qcm';
+  const a = type === 'vf' ? ['Vrai', 'Faux'] : type === 'qcm' ? (q.a || []).map(s => String(s || '').trim()).filter(Boolean).slice(0, 5) : [];
+  const v = q.v === '' || q.v == null || !isFinite(Number(q.v)) ? null : Number(q.v);
+  return {type, q:String(q.q || '').trim(), a, img:q.img || '', v};
+}
+const validQ = q => q.q && (q.type !== 'qcm' || q.a.length >= 2);
+
+/* ---------- Réseau : relais MQTT en ligne, ou BroadcastChannel pour tester sur un seul ordi ---------- */
+function hostNet(code, local, h){
+  if (local) {
+    const ch = new BroadcastChannel('x60-' + code);
+    ch.onmessage = e => { const d = e.data; if (!d || d.to !== 'host') return; if (d.m.t === '__close') h.close(d.from); else h.msg(d.from, d.m); };
+    setTimeout(h.ready, 50);
+    return { send:(pid, m) => ch.postMessage({to:pid, m}), stop:() => ch.close() };
+  }
+  if (typeof mqtt === 'undefined') { setTimeout(() => h.error('Internet est nécessaire pour lancer la soirée.'), 0); return { send(){}, stop(){} }; }
+  const base = TOPIC + code + '/';
+  const cl = mqtt.connect(BROKER, {clientId:'x60-h-' + rid(), clean:true, keepalive:20, connectTimeout:10000, reconnectPeriod:2000});
+  cl.on('connect', () => cl.subscribe(base + 'host', {qos:1}, err => { if (err) h.error('Connexion au serveur impossible.'); else h.ready(); }));
+  cl.on('offline', () => h.error('Connexion internet perdue, reconnexion…'));
+  cl.on('message', (t, buf) => { let d; try { d = JSON.parse(buf.toString()); } catch(e){ return; }
+    if (!d || typeof d.from !== 'string' || !d.m) return;
+    if (d.m.t === '__close') h.close(d.from); else h.msg(d.from, d.m); });
+  return { send:(pid, m) => cl.publish(base + 'p/' + pid, JSON.stringify(m), {qos:1}), stop:() => { try { cl.end(true); } catch(e){} } };
+}
+function playerNet(code, local, h){
+  if (local) {
+    const pid = 'p' + rid();
+    const ch = new BroadcastChannel('x60-' + code);
+    ch.onmessage = e => { if (e.data && e.data.to === pid) h.msg(e.data.m); };
+    addEventListener('beforeunload', () => ch.postMessage({to:'host', from:pid, m:{t:'__close'}}));
+    setTimeout(h.open, 50);
+    return { send:m => ch.postMessage({to:'host', from:pid, m}), stop:() => ch.close() };
+  }
+  if (typeof mqtt === 'undefined') { setTimeout(() => h.error('Pas de connexion internet.'), 0); return { send(){}, stop(){} }; }
+  const base = TOPIC + code + '/', pid = sstore.get('x60-pid') || rid();
+  sstore.set('x60-pid', pid);
+  const cl = mqtt.connect(BROKER, {clientId:'x60-p-' + pid + rid().slice(0, 3), clean:true, keepalive:20, connectTimeout:10000, reconnectPeriod:2000,
+    will:{topic:base + 'host', payload:JSON.stringify({from:pid, m:{t:'__close'}}), qos:1, retain:false}});
+  cl.on('connect', () => cl.subscribe(base + 'p/' + pid, {qos:1}, err => { if (!err) h.open(); }));
+  cl.on('offline', () => h.error && h.error('Connexion perdue, reconnexion…'));
+  cl.on('message', (t, buf) => { let d; try { d = JSON.parse(buf.toString()); } catch(e){ return; } h.msg(d); });
+  return { send:m => cl.publish(base + 'host', JSON.stringify({from:pid, m}), {qos:1}), stop:() => { try { cl.end(true); } catch(e){} } };
+}
+
+/* ---------- Sons (synthétisés, rien à télécharger) ---------- */
+const SFX = {
+  ctx:null, on:true,
+  init(){ if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} } if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume(); },
+  tone(f, d, at = 0, type = 'sine', v = .16){ const c = this.ctx; if (!c || !this.on) return;
+    const t = c.currentTime + at, o = c.createOscillator(), g = c.createGain(); o.type = type; o.frequency.setValueAtTime(f, t);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .02); g.gain.exponentialRampToValueAtTime(.001, t + d);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t + d + .05); },
+  join(){ this.tone(784, .15, 0, 'triangle'); this.tone(1175, .25, .1, 'triangle'); },
+  tick(){ this.tone(1400, .08, 0, 'sine', .07); },
+  whoosh(){ [392, 523, 659].forEach((f, i) => this.tone(f, .3, i * .07, 'triangle', .12)); },
+  reveal(){ [523, 659, 784, 1047].forEach((f, i) => this.tone(f, .35, i * .09, 'triangle')); },
+  contest(){ this.tone(330, .18, 0, 'square', .07); this.tone(440, .3, .16, 'square', .07); },
+  fanfare(){ [[523,0],[659,.15],[784,.3],[1047,.5],[784,.7],[1047,.85]].forEach(([f, t]) => this.tone(f, .45, t, 'triangle', .14)); }
+};
+
+/* ---------- Neige ---------- */
+(function snow(){
+  const c = $('#snow'), x = c.getContext('2d'); let W = 0, Hh = 0, dpr = 1; const fl = [];
+  function rs(){ dpr = Math.min(devicePixelRatio || 1, 2); W = c.width = innerWidth * dpr; Hh = c.height = innerHeight * dpr; }
+  rs(); addEventListener('resize', rs);
+  const N = innerWidth < 700 ? 45 : 110;
+  for (let i = 0; i < N; i++) fl.push({x:Math.random(), y:Math.random(), r:Math.random() * 2.2 + .7, s:Math.random() * .6 + .25, w:Math.random() * 6.3});
+  let last = performance.now();
+  function f(now){ const dt = Math.min(now - last, 50) / 16; last = now; x.clearRect(0, 0, W, Hh);
+    for (const p of fl) { p.y += p.s * dt / 700; p.w += .01 * dt; p.x += Math.sin(p.w) * .0004 * dt;
+      if (p.y > 1.02) { p.y = -.02; p.x = Math.random(); }
+      x.beginPath(); x.fillStyle = 'rgba(255,255,255,' + (.35 + p.r / 6) + ')'; x.arc(p.x * W, p.y * Hh, p.r * dpr, 0, 6.29); x.fill(); }
+    requestAnimationFrame(f); }
+  requestAnimationFrame(f);
+})();
+
+/* ======================================================================
+   ORDINATEUR / TV
+   ====================================================================== */
+let H = null;
+const SAVEKEY = 'x60-save-v1';
+function readSave(){ try { const s = JSON.parse(store.get(SAVEKEY)); if (s && s.code && Date.now() - s.ts < 4 * 86400000) return s; } catch(e){} return null; }
+function save(){ if (!H) return; store.set(SAVEKEY, JSON.stringify({code:H.code, pin:H.pin, local:H.local, players:[...H.players.values()].map(p => [p.name, p.score]), done:[...H.done], ts:Date.now()})); }
+const ranking = () => [...H.players.values()].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+const curM = () => H.M[H.mi];
+const curQ = () => curM() ? curM().qs[H.qi] : null;
+const sendP = (p, m) => { if (p && p.on && p.pid) H.net.send(p.pid, m); };
+const eachP = fn => H.players.forEach(p => { if (p.on && p.pid) fn(p); });
+
+function showHome(){
+  show('s-home'); $('#topbar').hidden = true;
+  const sv = readSave();
+  $('#h-resume').hidden = !sv;
+  if (sv) $('#h-resume').textContent = 'Reprendre la partie (' + plural(sv.players.length, 'joueur') + ')';
+}
+
+function startHost(local, resume){
+  SFX.init();
+  const sv = resume ? readSave() : null;
+  if (sv) local = !!sv.local;
+  const code = sv ? sv.code : String(1000 + Math.floor(Math.random() * 9000));
+  H = {code, pin:sv ? sv.pin : rid() + rid(), local, players:new Map(), pid2key:new Map(), remotes:new Set(),
+       phase:'lobby', M:loadQs().map(m => ({id:m.id || rid(), name:m.name || 'Manche', emoji:m.emoji || '⭐', qs:(m.qs || []).map(normQ).filter(validQ)})),
+       mi:-1, qi:-1, qid:null, ans:new Map(), res:null, done:new Set(sv ? sv.done : []), rank:false, xHidden:false, ctl:false};
+  if (sv) sv.players.forEach(([name, score]) => { const key = name.toLowerCase(); H.players.set(key, {name, key, score:score | 0, on:false, pid:null}); });
+  if (!sv) save();
+  const base = location.origin + location.pathname;
+  H.url = base + '?code=' + code + (local ? '&local=1' : '');
+  H.xurl = base + '?code=' + code + '&x=' + H.pin + (local ? '&local=1' : '');
+  $('#qr').innerHTML = ''; $('#xqr').innerHTML = '';
+  if (typeof QRCode !== 'undefined') {
+    new QRCode($('#qr'), {text:H.url, width:300, height:300, correctLevel:QRCode.CorrectLevel.M});
+    new QRCode($('#xqr'), {text:H.xurl, width:180, height:180, correctLevel:QRCode.CorrectLevel.M});
+  } else $('#qr').innerHTML = '<span style="color:#06142c">QR code indisponible (pas d’internet ?)</span>';
+  $('#l-url').innerHTML = 'ou va sur <b>' + esc((location.host + location.pathname).replace(/index\.html$/, '')) + '</b> avec le code <b>' + code + '</b>';
+  $('#tb-code').textContent = 'Code ' + code;
+  $('#l-local').hidden = !local;
+  $('#l-local').innerHTML = local ? `<a class="btn sm" href="${esc(H.url)}" target="_blank">+ Ouvrir un invité</a><a class="btn sm gold" href="${esc(H.xurl)}" target="_blank">Ouvrir la télécommande de Xavier</a>` : '';
+  H.net = hostNet(code, local, {
+    ready:() => { $('#l-status').textContent = local ? '🧪 Mode test : ouvre des onglets avec les boutons ci-dessous.' : '✅ Prêt ! Scannez le QR code avec l’appareil photo du téléphone.'; },
+    error:m => { $('#l-status').textContent = '⚠️ ' + m; },
+    msg:onHostMsg, close:onHostClose
+  });
+  $('#topbar').hidden = false;
+  renderTV(); pushX();
+}
+
+function onHostMsg(pid, m){
+  if (!H || !m || typeof m !== 'object') return;
+  if (m.t === 'join') {
+    let name = String(m.name || '').replace(/\s+/g, ' ').trim().slice(0, 18) || 'Invité';
+    let key = name.toLowerCase(), p = H.players.get(key);
+    if (p && p.on && p.pid !== pid) { let n = 2; while (H.players.has((name + ' ' + n).toLowerCase())) n++; name += ' ' + n; key = name.toLowerCase(); p = null; }
+    if (!p) { p = {name, key, score:0, on:false, pid:null}; H.players.set(key, p); SFX.join(); }
+    if (p.pid && p.pid !== pid) H.pid2key.delete(p.pid);
+    p.pid = pid; p.on = true; H.pid2key.set(pid, key);
+    H.net.send(pid, {t:'welcome', name:p.name, score:p.score});
+    sendState(p);
+    if (H.phase === 'lobby') renderLobby(); else updateCount();
+    pushX(); save();
+  } else if (m.t === 'ans') {
+    const p = H.players.get(H.pid2key.get(pid)), q = curQ();
+    if (!p || !q || H.phase !== 'question' || m.qid !== H.qid) return;
+    let v;
+    if (q.type === 'open') { v = String(m.a == null ? '' : m.a).replace(/\s+/g, ' ').trim().slice(0, 160); if (!v) return; }
+    else if (q.type === 'nombre') { v = Number(String(m.a).replace(',', '.').replace(/\s/g, '')); if (String(m.a).trim() === '' || !isFinite(v)) return; }
+    else { v = Number(m.a); if (!Number.isInteger(v) || v < 0 || v >= q.a.length) return; }
+    const first = !H.ans.has(p.key); H.ans.set(p.key, v);
+    H.net.send(pid, {t:'ack', qid:H.qid, a:v});
+    if (first) SFX.tick();
+    updateCount(); pushX();
+  } else if (m.t === 'xav') {
+    if (m.pin !== H.pin) { H.net.send(pid, {t:'xdeny'}); return; }
+    H.remotes.add(pid); H.xHidden = true;
+    if (H.phase === 'lobby') renderLobby();
+    pushX();
+  } else if (m.t === 'cmd' && H.remotes.has(pid)) doCmd(m);
+}
+function onHostClose(pid){
+  if (!H) return;
+  if (H.remotes.delete(pid)) { if (H.phase === 'lobby') renderLobby(); return; }
+  const key = H.pid2key.get(pid), p = H.players.get(key); H.pid2key.delete(pid);
+  if (!p || p.pid !== pid) return;
+  p.on = false;
+  if (H.phase === 'lobby') renderLobby(); else updateCount();
+  pushX();
+}
+
+function qPayload(){
+  const q = curQ();
+  return {t:'q', qid:H.qid, type:q.type, q:q.q, a:q.a, n:H.qi + 1, of:curM().qs.length, m:curM().name};
+}
+function sendState(p){
+  if (H.phase === 'question') sendP(p, Object.assign(qPayload(), {mine:H.ans.has(p.key) ? H.ans.get(p.key) : null}));
+  else if (H.phase === 'reveal' && H.res) sendP(p, resFor(p));
+  else if (H.phase === 'podium') sendP(p, endFor(p));
+  else sendP(p, {t:'wait', msg:waitMsg(), score:p.score});
+}
+function waitMsg(){
+  if (H.phase === 'lobby') return 'Le quiz va bientôt commencer. Regardez la TV !';
+  if (H.phase === 'intro') return 'Manche « ' + curM().name + ' » : première question dans un instant…';
+  if (H.phase === 'mend') return 'Fin de la manche ! Regardez le classement sur la TV.';
+  return 'Xavier choisit la prochaine manche…';
+}
+function resFor(p){
+  const r = H.res;
+  return {t:'res', kind:r.type, ok:r.win.includes(p.key), answered:H.ans.has(p.key), skipped:!!r.skipped, score:p.score};
+}
+const tieRank = p => 1 + [...H.players.values()].filter(o => o.score > p.score).length;
+function endFor(p){ return {t:'end', rank:tieRank(p), of:H.players.size, score:p.score}; }
+
+function doCmd(m){
+  if (!H || !m) return;
+  const c = m.c;
+  if (c === 'start' && (H.phase === 'lobby')) { H.phase = 'menu'; SFX.whoosh(); }
+  else if (c === 'lobby' && H.phase !== 'question') { H.phase = 'lobby'; }
+  else if (c === 'manche' && ['menu', 'mend', 'podium'].includes(H.phase)) {
+    const i = m.i | 0; if (!H.M[i] || !H.M[i].qs.length) return;
+    H.mi = i; H.qi = -1; H.res = null; H.ans = new Map(); H.phase = 'intro'; SFX.whoosh();
+  }
+  else if (c === 'next' && (H.phase === 'intro' || H.phase === 'reveal')) {
+    H.qi++;
+    if (H.qi < curM().qs.length) askQ();
+    else { H.done.add(curM().id); H.phase = 'mend'; H.res = null; SFX.fanfare(); }
+  }
+  else if (c === 'reveal' && H.phase === 'question') { if (!reveal(m)) return; }
+  else if (c === 'skip' && H.phase === 'question') { H.res = {type:curQ().type, win:[], skipped:true}; H.phase = 'reveal'; }
+  else if (c === 'menu' && H.phase !== 'lobby') { if (H.phase === 'question') H.ans = new Map(); H.phase = 'menu'; H.res = null; }
+  else if (c === 'rank') { H.rank = !H.rank; renderRank(); pushX(); return; }
+  else if (c === 'podium' && H.phase !== 'question') { H.phase = 'podium'; H.rank = false; renderRank(); SFX.fanfare(); }
+  else if (c === 'adj') {
+    const p = H.players.get(String(m.k)), d = m.d > 0 ? 1 : -1;
+    if (!p || (d < 0 && p.score <= 0)) return;
+    p.score += d; SFX.contest();
+    toast('⚖️ Xavier conteste ! ' + (d > 0 ? '+1' : '−1') + ' pour ' + p.name);
+    sendP(p, {t:'score', score:p.score, d});
+    if (['mend', 'podium'].includes(H.phase)) renderTV();
+    if (H.rank) renderRank();
+    pushX(); save(); return;
+  }
+  else return;
+  eachP(sendState);
+  renderTV(); pushX(); save();
+}
+
+function askQ(){
+  H.qid = rid(); H.ans = new Map(); H.res = null; H.phase = 'question';
+  SFX.whoosh();
+}
+
+function reveal(m){
+  const q = curQ(), win = [], res = {type:q.type, win};
+  if (q.type === 'qcm' || q.type === 'vf') {
+    const sel = [...new Set((Array.isArray(m.sel) ? m.sel : []).map(Number))].filter(i => Number.isInteger(i) && i >= 0 && i < q.a.length);
+    if (!sel.length) return false;
+    res.ok = sel; H.ans.forEach((v, k) => { if (sel.includes(v)) win.push(k); });
+  } else if (q.type === 'open') {
+    const sel = (Array.isArray(m.sel) ? m.sel : []).map(String).filter(k => H.ans.has(k));
+    res.fav = [...new Set(sel)]; win.push(...res.fav);
+  } else {
+    const v = Number(String(m.v).replace(',', '.'));
+    if (String(m.v == null ? '' : m.v).trim() === '' || !isFinite(v)) return false;
+    res.v = v;
+    let best = Infinity; H.ans.forEach(g => { best = Math.min(best, Math.abs(g - v)); });
+    H.ans.forEach((g, k) => { if (Math.abs(g - v) === best) win.push(k); });
+  }
+  win.forEach(k => { const p = H.players.get(k); if (p) p.score += 1; });
+  H.res = res; H.phase = 'reveal';
+  SFX.reveal();
+  return true;
+}
+
+/* ---------- Affichage TV ---------- */
+function renderTV(){
+  if (!H) return;
+  renderRank();
+  if (H.phase === 'lobby') { show('s-lobby'); renderLobby(); return; }
+  show('s-game');
+  const g = $('#game'), M = curM();
+  if (H.phase === 'menu') {
+    g.innerHTML = `<h2 class="tvh">Xavier, à toi de choisir la manche !</h2>
+      <div class="mgrid">${H.M.map(m => `<div class="mcard ${H.done.has(m.id) ? 'done' : ''} ${m.qs.length ? '' : 'empty'}"><span class="em">${esc(m.emoji)}</span><b>${esc(m.name)}</b><small>${m.qs.length ? plural(m.qs.length, 'question') : 'à remplir'}</small></div>`).join('')}</div>`;
+  } else if (H.phase === 'intro') {
+    g.innerHTML = `<div class="intro"><div class="em">${esc(M.emoji)}</div><div class="kick">Nouvelle manche</div><h1>${esc(M.name)}</h1><p>${plural(M.qs.length, 'question')}</p></div>`;
+  } else if (H.phase === 'question' || H.phase === 'reveal') {
+    g.innerHTML = viewQ();
+    updateCount();
+  } else if (H.phase === 'mend') {
+    g.innerHTML = `<h2 class="tvh">${esc(M.emoji)} Fin de la manche « ${esc(M.name)} »</h2><p class="sub">Le classement provisoire :</p>${rankHTML(12)}`;
+  } else if (H.phase === 'podium') {
+    const rk = ranking(), top = rk.slice(0, 3);
+    const lead = rk.length ? rk.filter(p => p.score === rk[0].score) : [];
+    const slot = (p, i) => p ? `<div class="pod p${i + 1}"><span class="md">${['🥇','🥈','🥉'][tieRank(p) - 1] || '🏅'}</span><span class="nm">${esc(p.name)}</span><div class="blk">${p.score}</div></div>` : '<div class="pod"></div>';
+    g.innerHTML = `<h2 class="tvh">🏆 Le podium final</h2>
+      ${lead.length ? `<div class="crown">${lead.length > 1 ? 'Meilleurs connaisseurs de Xavier : ' + lead.map(p => esc(p.name)).join(' et ') + ' !' : 'Meilleur connaisseur de Xavier : ' + esc(lead[0].name) + ' !'}</div>` : ''}
+      <div class="podium">${slot(top[1], 1)}${slot(top[0], 0)}${slot(top[2], 2)}</div>
+      <p class="sub" style="margin-top:2vh">Joyeux anniversaire Xavier ! 🎂❄️</p>`;
+  }
+}
+function viewQ(){
+  const M = curM(), q = curQ(), rev = H.phase === 'reveal', r = H.res;
+  let body = '';
+  if (q.type === 'qcm' || q.type === 'vf') {
+    const counts = q.a.map(() => 0); H.ans.forEach(v => { counts[v]++; });
+    body = `<div class="opts n${q.a.length}">${q.a.map((a, i) => {
+      const cls = rev && r && !r.skipped ? (r.ok.includes(i) ? 'ok' : 'dim') : '';
+      return `<div class="opt ${cls}" style="--c:${OPTC[i]}"><span class="lt" style="--c:${OPTC[i]}">${LETTERS[i]}</span><span class="tx">${esc(a)}</span>${rev ? `<span class="vc">${counts[i]}</span>` : ''}</div>`;
+    }).join('')}</div>`;
+  } else if (q.type === 'open') {
+    if (!rev) body = `<div class="hint">✍️ Écrivez votre réponse sur votre téléphone.<br>Xavier choisira celles qu’il préfère !</div>`;
+    else body = H.ans.size ? `<div class="agrid">${[...H.ans].map(([k, v], i) => { const fav = r.fav && r.fav.includes(k), p = H.players.get(k);
+        return `<div class="ac ${fav ? 'fav' : (r.fav && r.fav.length ? 'dimmed' : '')}" style="animation-delay:${Math.min(i, 20) * 60}ms"><p>${esc(v)}</p><span>${esc(p ? p.name : '?')}${fav ? ' · ❤️ +1' : ''}</span></div>`; }).join('')}</div>` : '';
+  } else {
+    if (!rev) body = `<div class="hint">🔢 Tapez un nombre sur votre téléphone.<br>Le plus proche de la vérité gagne !</div>`;
+    else if (!r.skipped) {
+      const list = [...H.ans].sort((a, b) => Math.abs(a[1] - r.v) - Math.abs(b[1] - r.v));
+      body = `<div class="bignum">${esc(fmtNum(r.v))}</div><div class="guesses">${list.map(([k, v]) => `<span class="chip ${r.win.includes(k) ? 'win' : ''}">${esc((H.players.get(k) || {}).name)}<b>${esc(fmtNum(v))}</b></span>`).join('')}</div>`;
+    }
+  }
+  let foot = '';
+  if (!rev) foot = `<div class="count" id="cnt"></div><div class="chips" id="who" style="justify-content:center"></div>`;
+  else if (r.skipped) foot = `<div class="nobody">Question passée ⏭️</div>`;
+  else if (r.win.length) foot = `<div class="winners"><div class="lab">${q.type === 'open' ? '❤️ Les coups de cœur de Xavier (+1 point)' : q.type === 'nombre' ? '🎯 Le plus proche (+1 point)' : '✅ Bonne réponse (+1 point)'}</div><div class="chips" style="justify-content:center">${r.win.map(k => `<span class="chip win">${esc((H.players.get(k) || {}).name)}</span>`).join('')}</div></div>`;
+  else foot = `<div class="nobody">${q.type === 'open' ? 'Xavier n’a été convaincu par personne… 🥶' : 'Personne n’a trouvé ! ❄️'}</div>`;
+  return `<div class="qhead"><span>${esc(M.emoji)} ${esc(M.name)}</span><span>Question ${H.qi + 1} / ${M.qs.length}</span></div>
+    <h1 class="qtext">${esc(q.q)}</h1>
+    ${q.img ? `<img class="qimg" src="${esc(q.img)}" alt="">` : ''}
+    ${body}
+    <div class="qfoot">${foot}</div>`;
+}
+const fmtNum = v => Number(v).toLocaleString('fr-FR', {maximumFractionDigits:2});
+function updateCount(){
+  if (!H || H.phase !== 'question') return;
+  const on = [...H.players.values()].filter(p => p.on || H.ans.has(p.key));
+  const c = $('#cnt'), w = $('#who'); if (!c) return;
+  c.innerHTML = `<b>${H.ans.size}</b> / ${on.length} ${H.ans.size > 1 ? 'ont répondu' : 'a répondu'}`;
+  w.innerHTML = on.map(p => `<span class="chip ${H.ans.has(p.key) ? 'win' : 'off'}">${H.ans.has(p.key) ? '✓ ' : ''}${esc(p.name)}</span>`).join('');
+}
+function rankHTML(limit){
+  const rk = ranking(); if (!rk.length) return '<p class="sub">Aucun joueur pour l’instant.</p>';
+  let pos = 0, prev = null;
+  return `<div class="rank">${rk.slice(0, limit).map((p, i) => { if (p.score !== prev) { pos = i + 1; prev = p.score; }
+    return `<div class="rk ${pos === 1 ? 'top1' : ''}" style="animation-delay:${i * 50}ms"><span class="pos">${pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : pos}</span><span class="nm">${esc(p.name)}</span><span class="sc">${plural(p.score, 'pt')}</span></div>`; }).join('')}
+    ${rk.length > limit ? `<p class="sub">… et ${rk.length - limit} autres</p>` : ''}</div>`;
+}
+function renderRank(){
+  const o = $('#rank-ov');
+  o.hidden = !(H && H.rank);
+  if (!o.hidden) o.innerHTML = `<h2 class="tvh">🏆 Le classement</h2>${rankHTML(14)}`;
+}
+function renderLobby(){
+  if (!H) return;
+  const ps = [...H.players.values()];
+  $('#l-n').textContent = ps.filter(p => p.on).length;
+  $('#l-players').innerHTML = ps.length ? ps.map(p => `<span class="chip ${p.on ? '' : 'off'}">${esc(p.name)}</span>`).join('') : '<span style="color:var(--muted)">En attente des premiers joueurs…</span>';
+  const conn = H.remotes.size > 0;
+  $('#xqr-wrap').hidden = conn && H.xHidden;
+  $('#xav-show').hidden = !(conn && H.xHidden);
+  $('#xav-txt').innerHTML = conn ? '<span class="ok">✅ Télécommande connectée !</span><br>Xavier peut lancer le quiz depuis son téléphone.' : 'Seul Xavier scanne ce QR code : il pilote tout le quiz depuis son téléphone.';
+}
+function toast(t){
+  document.querySelectorAll('#toast').forEach(e => e.remove());
+  const d = document.createElement('div'); d.id = 'toast'; d.textContent = t; document.body.appendChild(d);
+  setTimeout(() => d.remove(), 3500);
+}
+
+/* ---------- État envoyé à la télécommande ---------- */
+function xstate(){
+  const q = curQ(), M = curM();
+  const s = {phase:H.phase, code:H.code, qid:H.qid, rank:H.rank, mi:H.mi, qi:H.qi,
+    manches:H.M.map((m, i) => ({i, name:m.name, emoji:m.emoji, n:m.qs.length, done:H.done.has(m.id)})),
+    players:ranking().map(p => ({k:p.key, name:p.name, score:p.score, on:p.on, ans:H.ans.has(p.key)})),
+    nans:H.ans.size, non:[...H.players.values()].filter(p => p.on).length};
+  if (M) { s.mname = M.name; s.memoji = M.emoji; s.mlen = M.qs.length; }
+  if (q && (H.phase === 'question' || H.phase === 'reveal')) {
+    s.q = {type:q.type, q:q.q, a:q.a, v:q.v, img:!!q.img};
+    if (q.type === 'qcm' || q.type === 'vf') { s.counts = q.a.map(() => 0); H.ans.forEach(v => { s.counts[v]++; }); }
+    if (q.type === 'open') s.open = [...H.ans].map(([k, v]) => ({k, t:v}));
+    if (H.phase === 'reveal') s.res = Object.assign({}, H.res, {names:H.res.win.map(k => (H.players.get(k) || {}).name)});
+  }
+  return s;
+}
+function pushX(){
+  if (!H) return;
+  const s = xstate();
+  H.remotes.forEach(pid => H.net.send(pid, {t:'x', s}));
+  if (H.ctl) renderRemote($('#ctl-body'), s, doCmd);
+}
+
+/* ======================================================================
+   TÉLÉCOMMANDE DE XAVIER (téléphone, ou panneau « Piloter ici » sur l'ordi)
+   ====================================================================== */
+const XS = {qid:null, sel:new Set(), v:'', tab:'jeu'};
+function renderRemote(root, s, send){
+  if (!root || !s) return;
+  if (s.qid !== XS.qid) { XS.qid = s.qid; XS.sel = new Set(); XS.v = s.q && s.q.v != null ? String(s.q.v) : ''; }
+  const ae = document.activeElement;
+  if (ae && ae.id === 'x-v' && root.contains(ae) && s.phase === 'question') { const c = root.querySelector('.xcount'); if (c) c.innerHTML = countTxt(s); return; }
+  const tabs = `<div class="xtabs"><button data-tab="jeu" class="${XS.tab === 'jeu' ? 'on' : ''}">🎮 Le jeu</button><button data-tab="sc" class="${XS.tab === 'sc' ? 'on' : ''}">⚖️ Scores & contestations</button></div>`;
+  let h = '';
+  if (XS.tab === 'sc') {
+    h = `<div class="xbox"><p class="note">Xavier conteste ? Donne ou retire un point. Ça s’affiche sur la TV.</p>
+      ${s.players.length ? s.players.map(p => `<div class="xpl"><span class="nm">${esc(p.name)}${p.on ? '' : ' <small>(parti)</small>'}</span><button class="minus" data-adj="-1" data-k="${esc(p.k)}" aria-label="Retirer un point">−1</button><span class="sc">${p.score}</span><button class="plus" data-adj="1" data-k="${esc(p.k)}" aria-label="Donner un point">+1</button></div>`).join('') : '<p class="note">Aucun joueur pour l’instant.</p>'}
+      <button class="btn ghost block" data-cmd="rank">${s.rank ? 'Cacher le classement de la TV' : '🏆 Afficher le classement sur la TV'}</button></div>`;
+  } else if (s.phase === 'lobby') {
+    h = `<div class="xbox"><h2>Salut Xavier ! 👋</h2><p class="xcount"><b>${s.non}</b> ${s.non > 1 ? 'invités connectés' : 'invité connecté'}</p>
+      <div class="chips">${s.players.map(p => `<span class="chip ${p.on ? '' : 'off'}">${esc(p.name)}</span>`).join('')}</div>
+      <p class="note">Quand tout le monde a scanné le QR code de la TV, lance le quiz.</p>
+      <button class="btn gold block" data-cmd="start">C’est parti ! ▶</button></div>`;
+  } else if (s.phase === 'menu' || s.phase === 'mend' || s.phase === 'podium') {
+    h = `<div class="xbox">${s.phase === 'mend' ? `<h2>Manche terminée ! 🎉</h2><p class="note">Le classement est sur la TV.</p>` : s.phase === 'podium' ? `<h2>🏆 Le podium est affiché</h2><p class="note">Tu peux encore relancer une manche si tu veux.</p>` : ''}
+      <h2>Choisis la manche</h2>
+      ${s.manches.map(m => `<button class="xmanche ${m.done ? 'done' : ''}" data-manche="${m.i}" ${m.n ? '' : 'disabled'}><span class="em">${esc(m.emoji)}</span><span class="tx">${esc(m.name)}<br><small>${m.n ? plural(m.n, 'question') : 'vide'}${m.done ? ' · ✓ jouée' : ''}</small></span></button>`).join('')}
+      ${s.phase !== 'podium' ? '<button class="btn gold block" data-cmd="podium">🏆 Terminer : afficher le podium</button>' : ''}
+      <button class="btn ghost block" data-cmd="lobby">Réafficher le QR code des invités</button></div>`;
+  } else if (s.phase === 'intro') {
+    h = `<div class="xbox"><h2>${esc(s.memoji)} ${esc(s.mname)}</h2><p class="note">${plural(s.mlen, 'question')}. Le titre de la manche est sur la TV.</p>
+      <button class="btn gold block" data-cmd="next">Première question ▶</button>
+      <button class="btn ghost block" data-cmd="menu">Retour aux manches</button></div>`;
+  } else if (s.phase === 'question') {
+    const q = s.q;
+    let pick = '';
+    if (q.type === 'qcm' || q.type === 'vf') {
+      pick = `<p class="note">Touche la bonne réponse (ou plusieurs), puis révèle.</p>
+        ${q.a.map((a, i) => `<button class="xopt ${XS.sel.has(i) ? 'sel' : ''}" style="--c:${OPTC[i]}" data-sel="${i}"><span class="lt" style="--c:${OPTC[i]}">${LETTERS[i]}</span><span class="tx">${esc(a)}</span><span class="n">${s.counts[i]}</span></button>`).join('')}
+        <button class="btn green block" data-cmd="reveal" ${XS.sel.size ? '' : 'disabled'}>Révéler la réponse</button>`;
+    } else if (q.type === 'open') {
+      pick = `<p class="note">Touche les réponses qui te plaisent : +1 point pour chacune. Les noms s’affichent sur la TV à la révélation.</p>
+        ${s.open.length ? s.open.map(o => `<button class="xopt xans ${XS.sel.has(o.k) ? 'sel' : ''}" data-sel="${esc(o.k)}"><span class="tx">${esc(o.t)}</span></button>`).join('') : '<p class="note">⏳ En attente des réponses…</p>'}
+        <button class="btn green block" data-cmd="reveal" ${s.open.length ? '' : 'disabled'}>Révéler ${XS.sel.size ? 'mes ' + plural(XS.sel.size, 'coup') + ' de cœur' : 'les réponses'}</button>`;
+    } else {
+      pick = `<p class="note">Tape la vraie valeur : le plus proche gagne 1 point.</p>
+        <input id="x-v" type="text" inputmode="decimal" placeholder="La vraie valeur" value="${esc(XS.v)}">
+        <button class="btn green block" data-cmd="reveal" id="x-rev" ${XS.v.trim() ? '' : 'disabled'}>Révéler</button>`;
+    }
+    h = `<div class="xbox"><p class="note">${esc(s.memoji)} ${esc(s.mname)} · Question ${s.qi + 1} / ${s.mlen}</p>
+      <div class="xq">${esc(q.q)}${q.img ? ' 📷' : ''}</div>
+      <p class="xcount">${countTxt(s)}</p>
+      ${pick}
+      <div class="row"><button class="btn ghost sm" data-cmd="skip">Passer la question</button><button class="btn ghost sm" data-cmd="menu">Retour aux manches</button></div></div>`;
+  } else if (s.phase === 'reveal') {
+    const r = s.res, last = s.qi + 1 >= s.mlen;
+    h = `<div class="xbox"><p class="note">${esc(s.memoji)} ${esc(s.mname)} · Question ${s.qi + 1} / ${s.mlen}</p>
+      <div class="xq">${esc(s.q.q)}</div>
+      <p class="xcount">${r.skipped ? 'Question passée.' : r.names.length ? '+1 point pour : <b>' + r.names.map(esc).join(', ') + '</b>' : 'Personne ne marque de point.'}</p>
+      <p class="note">Une erreur ? Onglet « Scores & contestations ».</p>
+      <button class="btn gold block" data-cmd="next">${last ? 'Fin de la manche 🏁' : 'Question suivante ▶'}</button>
+      <button class="btn ghost block" data-cmd="menu">Retour aux manches</button></div>`;
+  }
+  root.innerHTML = tabs + h;
+  root.onclick = e => {
+    const b = e.target.closest('button'); if (!b || b.disabled) return;
+    if (b.dataset.tab) { XS.tab = b.dataset.tab; renderRemote(root, s, send); return; }
+    if (b.dataset.sel != null) { const k = s.q && s.q.type === 'open' ? b.dataset.sel : Number(b.dataset.sel); XS.sel.has(k) ? XS.sel.delete(k) : XS.sel.add(k); renderRemote(root, s, send); return; }
+    if (b.dataset.manche != null) { send({c:'manche', i:Number(b.dataset.manche)}); return; }
+    if (b.dataset.adj) { send({c:'adj', k:b.dataset.k, d:Number(b.dataset.adj)}); return; }
+    const c = b.dataset.cmd; if (!c) return;
+    if (c === 'reveal') send({c, sel:[...XS.sel], v:XS.v});
+    else send({c});
+    if (navigator.vibrate) navigator.vibrate(15);
+  };
+  root.oninput = e => { if (e.target.id === 'x-v') { XS.v = e.target.value; const b = root.querySelector('#x-rev'); if (b) b.disabled = !XS.v.trim(); } };
+}
+const countTxt = s => `<b>${s.nans}</b> / ${Math.max(s.non, s.nans)} ${s.nans > 1 ? 'ont répondu' : 'a répondu'}${s.players.filter(p => p.on && !p.ans).length && s.nans ? ' · manque : ' + s.players.filter(p => p.on && !p.ans).map(p => esc(p.name)).join(', ') : ''}`;
+
+function startRemote(code, pin, local){
+  show('s-remote');
+  const root = $('#s-remote');
+  root.innerHTML = `<div class="wait"><div class="flake">❄️</div><h2>Connexion de la télécommande…</h2></div>`;
+  const net = playerNet(code, local, {
+    open:() => net.send({t:'xav', pin}),
+    error:m => { if (!root.querySelector('.xbox')) root.innerHTML = `<div class="wait"><h2>⚠️ ${esc(m)}</h2></div>`; },
+    msg:m => {
+      if (m.t === 'x') renderRemote(root, m.s, c => net.send(Object.assign({t:'cmd'}, c)));
+      else if (m.t === 'xdeny') root.innerHTML = `<div class="wait"><h2>Ce QR code n’est plus valable</h2><p>Scanne le QR code « Télécommande de Xavier » affiché sur la TV.</p></div>`;
+    }
+  });
+}
+
+/* ======================================================================
+   TÉLÉPHONE D'UN INVITÉ
+   ====================================================================== */
+let P = null;
+function startPlayer(code, local){
+  P = {code, local, name:sstore.get('x60-name') || store.get('x60-name') || '', view:code ? 'join' : 'code', score:0, q:null, mine:null, res:null, draft:'', msg:'', net:null};
+  show('s-player');
+  if (code && sstore.get('x60-joined') === code && P.name) join(); else renderP();
+}
+function join(){
+  sstore.set('x60-name', P.name); store.set('x60-name', P.name); sstore.set('x60-joined', P.code);
+  P.view = 'connecting'; renderP();
+  if (P.net) P.net.stop();
+  P.net = playerNet(P.code, P.local, {
+    open:() => P.net.send({t:'join', name:P.name}),
+    error:m => { P.err = m; if (P.view === 'connecting') renderP(); },
+    msg:onPMsg
+  });
+  setTimeout(() => { if (P.view === 'connecting') { P.err = 'Pas de réponse… Vérifie le code affiché sur la TV.'; renderP(); } }, 9000);
+}
+function onPMsg(m){
+  if (!m || !m.t) return;
+  if (m.t === 'welcome') { P.name = m.name; P.score = m.score; P.err = ''; if (P.view === 'connecting') { P.view = 'wait'; P.msg = 'Le quiz va bientôt commencer. Regardez la TV !'; } }
+  else if (m.t === 'wait') { P.view = 'wait'; P.msg = m.msg; if (m.score != null) P.score = m.score; }
+  else if (m.t === 'q') { if (!P.q || P.q.qid !== m.qid) P.draft = m.mine != null && m.type !== 'qcm' && m.type !== 'vf' ? String(m.mine) : ''; P.q = m; P.mine = m.mine; P.view = 'q'; }
+  else if (m.t === 'ack') { if (P.q && m.qid === P.q.qid) { P.mine = m.a; if (P.q.type !== 'qcm' && P.q.type !== 'vf') P.draft = String(m.a); } }
+  else if (m.t === 'res') { P.res = m; P.score = m.score; P.view = 'res'; if (navigator.vibrate) navigator.vibrate(m.ok ? [60, 40, 60] : 120); }
+  else if (m.t === 'score') {
+    P.score = m.score; ptoast(m.d > 0 ? '⚖️ Xavier conteste : +1 point pour toi !' : '⚖️ Xavier conteste : −1 point…');
+    const s = document.querySelector('#s-player .pscore'); if (s) s.textContent = plural(P.score, 'pt');
+    return;
+  }
+  else if (m.t === 'end') { P.view = 'end'; P.end = m; P.score = m.score; }
+  else return;
+  renderP();
+}
+function ptoast(t){ document.querySelectorAll('.ptoast').forEach(e => e.remove()); const d = document.createElement('div'); d.className = 'ptoast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 3500); }
+function renderP(){
+  const root = $('#s-player'), v = P.view;
+  const head = P.name && !['code', 'join', 'connecting'].includes(v) ? `<div class="phead"><span>❄️ <b>${esc(P.name)}</b></span><span class="pscore">${plural(P.score, 'pt')}</span></div>` : '';
+  let h = '';
+  if (v === 'code' || v === 'join') {
+    h = `<div class="flake" style="font-size:54px">❄️</div><h1 class="title" style="font-size:34px">Le Grand Quiz<br>des <span class="sixty">60 ans</span> de Xavier</h1>
+      <div class="col" style="max-width:400px">
+        ${v === 'code' ? '<input id="p-code" inputmode="numeric" maxlength="4" placeholder="Code affiché sur la TV" autocomplete="off">' : ''}
+        <input id="p-name" maxlength="18" placeholder="Ton prénom" value="${esc(P.name)}" autocomplete="given-name" enterkeyhint="go">
+        <button class="btn gold block" id="p-go">Je joue ! ❄️</button>
+        <p class="err">${esc(P.err || '')}</p>
+      </div>`;
+  } else if (v === 'connecting') {
+    h = `<div class="wait"><div class="flake">❄️</div><h2>Connexion…</h2>${P.err ? `<p class="err">${esc(P.err)}</p><button class="btn ghost" id="p-retry">Changer de prénom ou de code</button>` : ''}</div>`;
+  } else if (v === 'wait') {
+    h = `<div class="wait"><div class="flake">❄️</div><h2>Bienvenue ${esc(P.name)} !</h2><p>${esc(P.msg)}</p></div>`;
+  } else if (v === 'q') {
+    const q = P.q;
+    h = `<p class="note" style="margin:0;color:var(--muted)">${esc(q.m)} · ${q.n} / ${q.of}</p><div class="pq">${esc(q.q)}</div>`;
+    if (q.type === 'qcm' || q.type === 'vf') {
+      h += `<div class="pbtns">${q.a.map((a, i) => `<button class="pb ${P.mine === i ? 'on' : ''}" style="--c:${OPTC[i]}" data-a="${i}"><span class="lt" style="--c:${OPTC[i]}">${LETTERS[i]}</span><span>${esc(a)}</span></button>`).join('')}</div>
+        <p class="sent">${P.mine != null ? '✓ Réponse envoyée. Tu peux changer d’avis tant que Xavier n’a pas révélé.' : 'Pas de chrono, prends ton temps !'}</p>`;
+    } else {
+      const open = q.type === 'open';
+      h += `<div class="col">${open ? `<textarea id="p-txt" maxlength="160" rows="3" placeholder="Écris ta réponse…">${esc(P.draft)}</textarea>` : `<input id="p-txt" type="text" inputmode="decimal" placeholder="Ton nombre" value="${esc(P.draft)}">`}
+        <button class="btn gold block" id="p-send">${P.mine != null ? 'Modifier ma réponse' : 'Envoyer'}</button>
+        ${P.mine != null ? `<p class="sent">✓ Envoyé : « ${esc(open ? P.mine : fmtNum(P.mine))} ». Tu peux encore la changer.</p>` : `<p class="sent" style="color:var(--muted)">${open ? 'Écris ce que tu veux : Xavier choisira ses préférées !' : 'Le plus proche gagne !'}</p>`}</div>`;
+    }
+  } else if (v === 'res') {
+    const r = P.res; let em, t, s;
+    if (r.skipped) { em = '⏭️'; t = 'Question passée'; s = 'Xavier est passé à la suite.'; }
+    else if (r.ok) { em = r.kind === 'open' ? '❤️' : r.kind === 'nombre' ? '🎯' : '✅'; t = r.kind === 'open' ? 'Xavier a choisi ta réponse !' : r.kind === 'nombre' ? 'Le plus proche !' : 'Bonne réponse !'; s = '+1 point'; }
+    else if (!r.answered) { em = '⏳'; t = 'Tu n’as pas répondu'; s = 'Pas grave, la suite arrive !'; }
+    else { em = r.kind === 'open' ? '🥶' : '❌'; t = r.kind === 'open' ? 'Xavier a préféré d’autres réponses…' : r.kind === 'nombre' ? 'Pas le plus proche cette fois' : 'Raté !'; s = 'Regardez la TV !'; }
+    h = `<div class="pres"><div class="em">${em}</div><h2>${t}</h2><p>${s}</p><p>Ton score : <b style="color:var(--sun)">${plural(P.score, 'point')}</b></p></div>`;
+  } else if (v === 'end') {
+    const e = P.end;
+    h = `<div class="pres"><div class="em">${e.rank === 1 ? '🏆' : e.rank <= 3 ? '🥇🥈🥉'.slice((e.rank - 1) * 2, e.rank * 2) : '❄️'}</div>
+      <h2>${e.rank === 1 ? 'Meilleur connaisseur de Xavier !' : 'Tu finis ' + e.rank + (e.rank === 1 ? 'er' : 'e') + ' sur ' + e.of}</h2>
+      <p>${plural(e.score, 'point')}</p><p>Merci d’avoir joué ! Joyeux anniversaire Xavier 🎂</p></div>`;
+  }
+  root.innerHTML = head + h;
+  const go = $('#p-go');
+  if (go) {
+    const submit = () => {
+      if (P.view === 'code') { const c = ($('#p-code').value || '').replace(/\D/g, ''); if (c.length !== 4) { P.err = 'Le code a 4 chiffres (il est affiché sur la TV).'; renderP(); return; } P.code = c; }
+      const n = ($('#p-name').value || '').replace(/\s+/g, ' ').trim();
+      if (!n) { P.err = 'Écris ton prénom !'; renderP(); return; }
+      P.name = n.slice(0, 18); P.err = ''; join();
+    };
+    go.onclick = submit; $('#p-name').onkeydown = e => { if (e.key === 'Enter') submit(); };
+  }
+  const rt = $('#p-retry'); if (rt) rt.onclick = () => { if (P.net) P.net.stop(); P.err = ''; P.view = 'code'; sstore.set('x60-joined', ''); renderP(); };
+  root.querySelectorAll('.pb').forEach(b => b.onclick = () => { const a = Number(b.dataset.a); P.mine = a; P.net.send({t:'ans', qid:P.q.qid, a}); renderP(); if (navigator.vibrate) navigator.vibrate(20); });
+  const tx = $('#p-txt'), sd = $('#p-send');
+  if (tx) tx.oninput = () => { P.draft = tx.value; };
+  if (sd) sd.onclick = () => { const val = (tx.value || '').trim(); if (!val) { tx.focus(); return; }
+    if (P.q.type === 'nombre' && !isFinite(Number(val.replace(',', '.').replace(/\s/g, '')))) { ptoast('Écris un nombre (ex : 42 ou -20)'); return; }
+    P.net.send({t:'ans', qid:P.q.qid, a:val}); sd.disabled = true; sd.textContent = 'Envoi…'; };
+}
+
+/* ======================================================================
+   ÉDITEUR DE QUESTIONS
+   ====================================================================== */
+let ED = null, edTimer = null, resetArm = false;
+function openEditor(){ ED = loadQs(); ED.forEach(m => { m.qs = m.qs || []; }); renderEd(); show('s-edit'); $('#ed-st').textContent = ''; }
+function edSave(now){
+  clearTimeout(edTimer);
+  const go = () => { const ok = saveQs(ED); $('#ed-st').textContent = ok ? 'Enregistré ✓' : '⚠️ Mémoire pleine : retire des photos ou utilise des photos plus petites.'; $('#ed-st').style.color = ok ? 'var(--green)' : 'var(--red)'; };
+  if (now) go(); else edTimer = setTimeout(go, 350);
+}
+function renderEd(){
+  $('#ed-list').innerHTML = ED.map((m, mi) => `
+    <div class="edm" data-m="${mi}">
+      <div class="edm-h"><input class="em-in" data-f="emoji" value="${esc(m.emoji)}" maxlength="4" aria-label="Emoji"><input class="name-in" data-f="name" value="${esc(m.name)}" aria-label="Nom de la manche"><span class="cnt">${plural(m.qs.length, 'question')}</span>
+        <button class="ibtn" data-a="mup" title="Monter">↑</button><button class="ibtn" data-a="mdown" title="Descendre">↓</button><button class="ibtn danger" data-a="mdel">Supprimer la manche</button></div>
+      ${m.hint ? `<p class="edhint">💡 ${esc(m.hint)}</p>` : ''}
+      ${m.qs.map((q, qi) => edQ(q, qi)).join('')}
+      <div class="edadd"><button class="ibtn" data-a="qadd" data-t="qcm">+ Choix multiples</button><button class="ibtn" data-a="qadd" data-t="vf">+ Vrai / Faux</button><button class="ibtn" data-a="qadd" data-t="open">+ Réponse libre</button><button class="ibtn" data-a="qadd" data-t="nombre">+ Nombre</button></div>
+    </div>`).join('');
+}
+function edQ(q, qi){
+  const t = TYPES[q.type] ? q.type : 'qcm', a = q.a || [];
+  return `<div class="edq" data-q="${qi}">
+    <div class="edq-h"><b>Q${qi + 1}</b><select data-f="type">${Object.entries(TYPES).map(([k, l]) => `<option value="${k}" ${k === t ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      <button class="ibtn" data-a="qup" title="Monter">↑</button><button class="ibtn" data-a="qdown" title="Descendre">↓</button><button class="ibtn danger" data-a="qdel" title="Supprimer">✕</button></div>
+    <textarea data-f="q" rows="2" placeholder="La question">${esc(q.q)}</textarea>
+    ${t === 'qcm' ? a.map((x, ai) => `<div class="edans"><span class="lt" style="--c:${OPTC[ai]}">${LETTERS[ai]}</span><input data-f="a" data-i="${ai}" value="${esc(x)}" placeholder="Réponse ${LETTERS[ai]}"><button class="ibtn danger" data-a="adel" data-i="${ai}" title="Retirer">✕</button></div>`).join('') + (a.length < 5 ? '<div><button class="ibtn" data-a="aadd">+ Une réponse</button></div>' : '') : ''}
+    ${t === 'vf' ? '<p class="edhint">Les invités choisissent Vrai ou Faux. Xavier révèle la bonne réponse.</p>' : ''}
+    ${t === 'open' ? '<p class="edhint">Chacun écrit ce qu’il veut. Xavier choisit ses réponses préférées (+1 point chacune).</p>' : ''}
+    ${t === 'nombre' ? `<label>Bonne valeur (laisse vide si Xavier la tape pendant le jeu)<input type="text" inputmode="decimal" data-f="v" value="${q.v == null ? '' : esc(q.v)}" placeholder="ex : -20"></label>` : ''}
+    <div class="edimg">${q.img ? `<img src="${esc(q.img)}" alt=""><button class="ibtn danger" data-a="idel">Retirer la photo</button>` : ''}<label class="ibtn" style="display:inline-flex;align-items:center;cursor:pointer">📷 ${q.img ? 'Changer la photo' : 'Ajouter une photo'}<input type="file" accept="image/*" data-f="img" hidden></label></div>
+  </div>`;
+}
+function edLoc(el){ const me = el.closest('[data-m]'), qe = el.closest('[data-q]'); return {mi:me ? Number(me.dataset.m) : -1, qi:qe ? Number(qe.dataset.q) : -1}; }
+function swap(arr, i, j){ if (j < 0 || j >= arr.length) return; [arr[i], arr[j]] = [arr[j], arr[i]]; }
+function resizeImg(file){
+  return new Promise((ok, ko) => {
+    const r = new FileReader();
+    r.onload = () => { const im = new Image(); im.onload = () => { const s = Math.min(1, 1280 / Math.max(im.width, im.height)); const c = document.createElement('canvas'); c.width = Math.round(im.width * s); c.height = Math.round(im.height * s);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); ok(c.toDataURL('image/jpeg', .78)); }; im.onerror = ko; im.src = r.result; };
+    r.onerror = ko; r.readAsDataURL(file);
+  });
+}
+function bindEditor(){
+  const L = $('#ed-list');
+  L.addEventListener('input', e => {
+    const f = e.target.dataset.f; if (!f || f === 'type' || f === 'img') return;
+    const {mi, qi} = edLoc(e.target), m = ED[mi]; if (!m) return;
+    if (qi < 0) { m[f] = e.target.value; }
+    else { const q = m.qs[qi]; if (f === 'a') { q.a[Number(e.target.dataset.i)] = e.target.value; } else if (f === 'v') q.v = e.target.value.trim() === '' ? null : e.target.value.trim().replace(',', '.'); else q[f] = e.target.value; }
+    edSave();
+  });
+  L.addEventListener('change', async e => {
+    const f = e.target.dataset.f, {mi, qi} = edLoc(e.target), m = ED[mi]; if (!m || qi < 0) return;
+    const q = m.qs[qi];
+    if (f === 'type') { q.type = e.target.value; if (q.type === 'qcm' && (!q.a || q.a.length < 2)) q.a = ['', '', '', '']; renderEd(); edSave(true); }
+    else if (f === 'img' && e.target.files[0]) { try { q.img = await resizeImg(e.target.files[0]); renderEd(); edSave(true); } catch(err){ $('#ed-st').textContent = '⚠️ Impossible de lire cette image.'; } }
+  });
+  L.addEventListener('click', e => {
+    const b = e.target.closest('button[data-a]'); if (!b) return;
+    const a = b.dataset.a, {mi, qi} = edLoc(b), m = ED[mi]; if (!m) return;
+    if (a === 'mup') swap(ED, mi, mi - 1);
+    else if (a === 'mdown') swap(ED, mi, mi + 1);
+    else if (a === 'mdel') { if (b.dataset.arm !== '1') { b.dataset.arm = '1'; b.textContent = 'Sûr ? Clique encore'; return; } ED.splice(mi, 1); }
+    else if (a === 'qadd') { const t = b.dataset.t; m.qs.push({type:t, q:'', a:t === 'qcm' ? ['', '', '', ''] : []}); }
+    else if (a === 'qup') swap(m.qs, qi, qi - 1);
+    else if (a === 'qdown') swap(m.qs, qi, qi + 1);
+    else if (a === 'qdel') m.qs.splice(qi, 1);
+    else if (a === 'aadd') { m.qs[qi].a = m.qs[qi].a || []; m.qs[qi].a.push(''); }
+    else if (a === 'adel') m.qs[qi].a.splice(Number(b.dataset.i), 1);
+    else if (a === 'idel') m.qs[qi].img = '';
+    renderEd(); edSave(true);
+  });
+  $('#ed-addm').onclick = () => { ED.push({id:'m' + rid(), name:'Nouvelle manche', emoji:'⭐', qs:[]}); renderEd(); edSave(true); window.scrollTo(0, document.body.scrollHeight); };
+  $('#ed-back').onclick = () => { edSave(true); showHome(); };
+  $('#ed-reset').onclick = () => {
+    if (!resetArm) { resetArm = true; $('#ed-reset').textContent = 'Sûr ? Tes modifications seront perdues'; setTimeout(() => { resetArm = false; $('#ed-reset').textContent = 'Remettre les questions de base'; }, 4000); return; }
+    resetArm = false; $('#ed-reset').textContent = 'Remettre les questions de base'; ED = clone(DEFAULT); renderEd(); edSave(true);
+  };
+  $('#ed-exp').onclick = () => {
+    const blob = new Blob([JSON.stringify(ED, null, 1)], {type:'application/json'});
+    const u = URL.createObjectURL(blob), l = document.createElement('a'); l.href = u; l.download = 'quiz-xavier-questions.json'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
+  };
+  $('#ed-imp').onchange = e => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { try { const d = JSON.parse(r.result); if (!Array.isArray(d) || !d.every(m => m && Array.isArray(m.qs))) throw 0; ED = d; renderEd(); edSave(true); $('#ed-st').textContent = 'Questions importées ✓'; } catch(err){ $('#ed-st').textContent = '⚠️ Ce fichier n’est pas un export du quiz.'; $('#ed-st').style.color = 'var(--red)'; } };
+    r.readAsText(f); e.target.value = '';
+  };
+}
+
+/* ======================================================================
+   DÉMARRAGE
+   ====================================================================== */
+$('#h-start').onclick = () => startHost(false, false);
+$('#h-resume').onclick = () => startHost(false, true);
+$('#h-local').onclick = () => startHost(true, false);
+$('#h-edit').onclick = openEditor;
+$('#h-guest').onclick = () => startPlayer(null, false);
+$('#l-go').onclick = () => doCmd({c:'start'});
+$('#xav-show').onclick = () => { if (H) { H.xHidden = false; renderLobby(); } };
+$('#tb-rank').onclick = () => doCmd({c:'rank'});
+$('#tb-snd').onclick = () => { SFX.on = !SFX.on; $('#tb-snd').textContent = SFX.on ? '🔊' : '🔇'; };
+$('#tb-ctl').onclick = () => {
+  if (!H) return; H.ctl = !H.ctl; $('#ctl').hidden = !H.ctl;
+  if (H.ctl) { $('#ctl').innerHTML = '<button class="btn ghost sm close" id="ctl-x">Fermer ✕</button><h3 style="margin:6px 0 12px">🎮 Piloter depuis l’ordi</h3><div id="ctl-body" class="col"></div>'; $('#ctl-x').onclick = () => $('#tb-ctl').click(); pushX(); }
+};
+addEventListener('keydown', e => { if (e.key === 'Escape' && H && H.ctl) $('#tb-ctl').click(); });
+bindEditor();
+
+(function route(){
+  const code = (params.get('code') || '').replace(/\D/g, '').slice(0, 4);
+  const local = params.has('local');
+  if (code && params.get('x')) startRemote(code, params.get('x'), local);
+  else if (code) startPlayer(code, local);
+  else showHome();
+})();
+</script>
+</body>
+</html>
