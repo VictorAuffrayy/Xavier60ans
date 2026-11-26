@@ -19,7 +19,7 @@ Tout tient dans un seul fichier : `index.html`.
 1. Sur l'ordinateur de la TV, ouvre le site puis clique sur **Lancer la soirée**.
 2. Les invités scannent le grand QR code et tapent leur prénom.
 3. Xavier scanne le petit QR code « Télécommande de Xavier ».
-4. Xavier appuie sur **C'est parti !** : la première question s'affiche directement.
+4. Xavier appuie sur **C'est parti !** : la TV affiche « Vous êtes prêts pour voyager avec Patrick ? », « C'est parti ! », un décompte 3, 2, 1, puis la première question.
 5. Après chaque révélation, **Question suivante**. Les questions s'enchaînent dans l'ordre de l'éditeur, puis le podium s'affiche tout seul à la fin.
 
 En secours, le bouton **🎮 Piloter ici** de l'ordinateur ouvre la même télécommande sur l'écran de l'ordinateur.

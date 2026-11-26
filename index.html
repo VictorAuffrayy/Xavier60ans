@@ -30,7 +30,7 @@ body.busy #photos{opacity:.13}
 .pol img{display:block;width:100%;height:auto;border-radius:2px}
 .pol::after{content:var(--cap);position:absolute;left:0;right:0;bottom:7px;text-align:center;font:700 15px Fredoka,sans-serif;color:#d2437f}
 @keyframes float{from{transform:translate(var(--x0),var(--y0)) rotate(var(--r0))}to{transform:translate(var(--x1),var(--y1)) rotate(var(--r1))}}
-.bunting{position:fixed;top:0;left:0;width:100%;height:74px;z-index:1;pointer-events:none;filter:drop-shadow(0 4px 6px rgba(0,0,0,.35))}
+.bunting{position:fixed;top:0;left:0;width:100%;height:74px;z-index:2;pointer-events:none;filter:drop-shadow(0 4px 6px rgba(0,0,0,.35))}
 .balloons{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
 .bal{position:absolute;bottom:-200px;width:var(--w);height:calc(var(--w) * 1.22);border-radius:50% 50% 47% 47%;background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.8),transparent 20%),radial-gradient(circle at 60% 70%,rgba(0,0,0,.18),transparent 60%),var(--c);animation:rise var(--d) linear infinite;animation-delay:var(--dl);opacity:.92}
 .bal::before{content:'';position:absolute;left:50%;bottom:-7px;margin-left:-6px;border:6px solid transparent;border-bottom:9px solid var(--c);border-top:0}
@@ -41,10 +41,16 @@ body:not(.tv) #photos,body:not(.tv) .bunting{display:none}
 .hbd{font-family:'Bowlby One',Fredoka,sans-serif;font-weight:400;font-size:clamp(46px,8.4vw,128px);line-height:1.02;margin:0;background:linear-gradient(90deg,#ffd36e,#ff7ab8,#b99bff,#7fd6ff,#ffd36e);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s linear infinite;filter:drop-shadow(0 5px 0 rgba(0,0,0,.35)) drop-shadow(0 0 34px rgba(255,122,184,.45))}
 .hbd.sm{font-size:clamp(30px,4.2vw,66px)}
 @keyframes shine{to{background-position:300% 0}}
+.cd{margin:auto;display:flex;align-items:center;justify-content:center;min-height:70vh;width:100%}
+.cd .ready{font-family:'Bowlby One',Fredoka,sans-serif;font-weight:400;font-size:clamp(40px,6.4vw,104px);line-height:1.08;max-width:1400px;animation:zoomin .7s cubic-bezier(.2,1.4,.4,1);text-shadow:0 0 34px rgba(255,122,184,.5),0 5px 0 rgba(0,0,0,.3)}
+.cd .ready .pat{color:#ffd36e}
+.cd .go{font-family:'Bowlby One',Fredoka,sans-serif;font-weight:400;font-size:clamp(70px,12vw,200px);color:#ff8cc6;text-shadow:0 0 50px rgba(255,140,198,.7),0 6px 0 rgba(0,0,0,.3);animation:zoomin .5s cubic-bezier(.2,1.6,.4,1)}
+.cd .num{font-family:'Bowlby One',Fredoka,sans-serif;font-weight:400;font-size:clamp(180px,34vw,520px);line-height:1;color:#ffd36e;text-shadow:0 0 70px rgba(255,211,110,.8),0 10px 0 rgba(0,0,0,.3);animation:cdnum 1s ease-out forwards}
+@keyframes cdnum{0%{transform:scale(2.4);opacity:0}25%{transform:scale(1);opacity:1}80%{transform:scale(.9);opacity:1}100%{transform:scale(.5);opacity:0}}
 .cake{font-size:clamp(60px,8vw,110px);line-height:1;animation:bounce 2.2s ease-in-out infinite;display:inline-block}
 @keyframes bounce{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(4deg)}}
 .peaks{position:fixed;left:0;right:0;bottom:0;height:22vh;z-index:-1;pointer-events:none;opacity:.55}
-.screen{min-height:100vh;min-height:100dvh;padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center}
+.screen{position:relative;z-index:1;min-height:100vh;min-height:100dvh;padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center}
 h1,h2,h3{margin:0;font-weight:700}
 .title{font-family:'Bowlby One',Fredoka,sans-serif;font-weight:400;font-size:clamp(26px,3.6vw,54px);line-height:1.02;letter-spacing:.5px;text-shadow:0 0 30px rgba(127,214,255,.45),0 4px 0 rgba(0,0,0,.25)}
 .title .sixty{display:inline-block;color:#ff8cc6;text-shadow:0 0 30px rgba(255,195,92,.6),0 4px 0 rgba(0,0,0,.25)}
@@ -530,7 +536,7 @@ const PH = { on:false, timer:null, i:Math.floor(Math.random() * 8),
 };
 function tvMode(phase){
   document.body.classList.add('tv'); PH.start();
-  document.body.classList.toggle('party', ['home', 'lobby', 'intro', 'mend', 'podium'].includes(phase));
+  document.body.classList.toggle('party', ['home', 'lobby', 'count', 'intro', 'mend', 'podium'].includes(phase));
   document.body.classList.toggle('busy', ['question', 'reveal'].includes(phase));
 }
 
@@ -561,7 +567,7 @@ function startHost(local, resume){
   const code = sv ? sv.code : String(1000 + Math.floor(Math.random() * 9000));
   H = {code, pin:sv ? sv.pin : rid() + rid(), local, players:new Map(), pid2key:new Map(), remotes:new Set(),
        phase:'lobby', M:loadQs().map(m => ({id:m.id || rid(), name:m.name || 'Manche', emoji:m.emoji || '⭐', qs:(m.qs || []).map(normQ).filter(validQ)})),
-       mi:-1, qi:-1, qid:null, ans:new Map(), res:null, done:new Set(sv ? sv.done : []), rank:false, xHidden:false, ctl:false};
+       mi:-1, qi:-1, qid:null, ans:new Map(), res:null, done:new Set(sv ? sv.done : []), rank:false, xHidden:false, ctl:false, cd:0, cdRun:0};
   if (sv && Number.isInteger(sv.mi)) { H.mi = sv.mi; H.qi = Number.isInteger(sv.qi) ? sv.qi : -1; }
   if (sv) sv.players.forEach(([name, score]) => { const key = name.toLowerCase(); H.players.set(key, {name, key, score:score | 0, on:false, pid:null}); });
   if (!sv) save();
@@ -639,6 +645,7 @@ function sendState(p){
 }
 function waitMsg(){
   if (H.phase === 'lobby') return 'Le quiz va bientôt commencer. Regardez la TV !';
+  if (H.phase === 'count') return 'Vous êtes prêts pour voyager avec Patrick ? Regardez la TV : 3, 2, 1…';
   if (H.phase === 'intro') return 'Manche « ' + curM().name + ' » : première question dans un instant…';
   if (H.phase === 'mend') return 'Fin de la manche ! Regardez le classement sur la TV.';
   return 'La suite arrive dans un instant…';
@@ -653,7 +660,7 @@ function endFor(p){ return {t:'end', rank:tieRank(p), of:H.players.size, score:p
 function doCmd(m){
   if (!H || !m) return;
   const c = m.c;
-  if (c === 'start' && (H.phase === 'lobby')) advance();
+  if (c === 'start' && (H.phase === 'lobby')) { startCountdown(); return; }
   else if (c === 'lobby' && H.phase !== 'question') { H.phase = 'lobby'; }
   else if (c === 'manche' && ['menu', 'mend', 'podium'].includes(H.phase)) {
     const i = m.i | 0; if (!H.M[i] || !H.M[i].qs.length) return;
@@ -678,6 +685,26 @@ function doCmd(m){
   else return;
   eachP(sendState);
   renderTV(); pushX(); save();
+}
+
+/* « Vous êtes prêts ? » + décompte 3, 2, 1 avant la première question. */
+const CD_STEPS = [
+  {h:'<div class="ready">Vous êtes prêts pour voyager<br>avec <span class="pat">Patrick</span> ? ✈️</div>', ms:3400},
+  {h:'<div class="go">C’est parti !</div>', ms:1700, fx:() => { SFX.fanfare(); FX.burst(180); }},
+  {h:'<div class="num">3</div>', ms:1000, fx:() => SFX.tone(523, .35, 0, 'triangle', .2)},
+  {h:'<div class="num">2</div>', ms:1000, fx:() => SFX.tone(659, .35, 0, 'triangle', .2)},
+  {h:'<div class="num">1</div>', ms:1000, fx:() => SFX.tone(784, .35, 0, 'triangle', .2)}
+];
+function startCountdown(){
+  H.phase = 'count'; H.cd = 0; const run = ++H.cdRun;
+  eachP(sendState); renderTV(); pushX();
+  const step = () => {
+    if (!H || H.phase !== 'count' || run !== H.cdRun) return;
+    if (H.cd >= CD_STEPS.length) { advance(); eachP(sendState); renderTV(); pushX(); save(); return; }
+    const st = CD_STEPS[H.cd]; const el = $('#cd'); if (el) el.innerHTML = st.h; if (st.fx) st.fx();
+    H.cd++; setTimeout(step, st.ms);
+  };
+  step();
 }
 
 /* Enchaîne les questions dans l'ordre, manche après manche, puis le podium. */
@@ -726,7 +753,9 @@ function renderTV(){
   if (H.phase === 'lobby') { show('s-lobby'); renderLobby(); return; }
   show('s-game');
   const g = $('#game'), M = curM();
-  if (H.phase === 'menu') {
+  if (H.phase === 'count') {
+    g.innerHTML = `<div class="cd" id="cd">${CD_STEPS[Math.max(0, H.cd - 1)].h}</div>`;
+  } else if (H.phase === 'menu') {
     g.innerHTML = `<h2 class="tvh">Xavier, à toi de choisir la manche !</h2>
       <div class="mgrid">${H.M.map(m => `<div class="mcard ${H.done.has(m.id) ? 'done' : ''} ${m.qs.length ? '' : 'empty'}"><span class="em">${esc(m.emoji)}</span><b>${esc(m.name)}</b><small>${m.qs.length ? plural(m.qs.length, 'question') : 'à remplir'}</small></div>`).join('')}</div>`;
   } else if (H.phase === 'intro') {
@@ -856,6 +885,8 @@ function renderRemote(root, s, send){
       <div class="chips">${s.players.map(p => `<span class="chip ${p.on ? '' : 'off'}">${esc(p.name)}</span>`).join('')}</div>
       <p class="note">${s.mi >= 0 ? 'Les nouveaux invités peuvent scanner le QR code de la TV. On reprend où on en était.' : 'Quand tout le monde a scanné le QR code de la TV, lance la première question.'}</p>
       <button class="btn gold block" data-cmd="start">${s.mi >= 0 ? 'Reprendre le quiz ▶' : 'C’est parti ! ▶'}</button></div>`;
+  } else if (s.phase === 'count') {
+    h = `<div class="xbox"><h2>✈️ C’est parti !</h2><p class="note">Le décompte est sur la TV, la première question arrive.</p></div>`;
   } else if (s.phase === 'podium') {
     h = `<div class="xbox"><h2>🏆 Le podium est affiché !</h2><p class="note">Toutes les questions sont passées. Joyeux anniversaire ! 🎂</p>
       <p class="note">Une erreur dans les scores ? Onglet « Scores & contestations » : le podium se met à jour.</p></div>`;
