@@ -48,3 +48,10 @@ Les manches bonus « Vrai ou faux express », « Photo mystère », « Qui a dit
 ## Tester avant la fête
 
 Accueil → **🧪 Tester sur cet ordi** : les boutons « Ouvrir un invité » et « Ouvrir la télécommande » ouvrent des onglets qui jouent entre eux sans internet. À faire depuis le site en ligne (pas en double-cliquant sur le fichier).
+
+## Musique
+
+La playlist (dossier `music/`) tourne en boucle sur la TV, en commençant toujours par « Joyeux anniversaire ».
+Elle baisse toute seule pendant le décompte, les questions et le roulement de tambour du podium.
+Boutons : **🎵 Musique** (couper / remettre) et **⏭** (suivante) en bas à droite de la TV, et les mêmes sur la télécommande de Xavier.
+Si le navigateur bloque le son au démarrage, un clic n'importe où sur la TV lance la musique.

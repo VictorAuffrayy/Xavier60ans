@@ -201,6 +201,9 @@ textarea{resize:vertical;min-height:54px}
 .ptoast{position:fixed;left:12px;right:12px;bottom:16px;z-index:40;background:linear-gradient(135deg,#ffe2a1,#ffb93f);color:var(--ink);font-weight:700;font-size:18px;border-radius:16px;padding:14px;text-align:center;animation:toast 3.4s ease forwards;transform:none!important}
 
 .xtabs{display:flex;gap:8px;width:100%}
+.xmus{display:flex;gap:8px;width:100%;align-items:center}
+.xmus .tr{flex:1;font-size:14px;color:var(--muted);text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#tb-mus.off{opacity:.6;text-decoration:line-through}
 .xtabs button{flex:1;appearance:none;border:1.5px solid var(--line);background:var(--glass);color:var(--ice);border-radius:12px;padding:10px;font:600 16px Fredoka,sans-serif;cursor:pointer}
 .xtabs button.on{background:var(--ice);color:var(--ink)}
 .xbox{width:100%;display:flex;flex-direction:column;gap:12px;text-align:left}
@@ -277,7 +280,9 @@ textarea{resize:vertical;min-height:54px}
   <span class="code" id="tb-code"></span>
   <button id="tb-ctl" title="Piloter depuis cet ordinateur">🎮 Piloter ici</button>
   <button id="tb-rank" title="Classement">🏆</button>
-  <button id="tb-snd" title="Son">🔊</button>
+  <button id="tb-mus" title="Couper / remettre la musique">🎵 Musique</button>
+  <button id="tb-next" title="Musique suivante">⏭</button>
+  <button id="tb-snd" title="Bruitages">🔔</button>
 </div>
 
 <!-- Accueil (ordinateur branché à la TV) -->
@@ -491,6 +496,37 @@ const SFX = {
   fanfare(){ [[523,0],[659,.15],[784,.3],[1047,.5],[784,.7],[1047,.85]].forEach(([f, t]) => this.tone(f, .45, t, 'triangle', .14)); }
 };
 
+/* ---------- Playlist de fond (TV seulement) : commence toujours par « Joyeux anniversaire » ---------- */
+const PLAYLIST = [
+  ['music/1-joyeux-anniversaire.mp3', 'Joyeux anniversaire – Patrick Sébastien'],
+  ['music/2-la-chenille.mp3', 'La chenille – La Bande à Basile'],
+  ['music/3-les-pouces-en-avant.mp3', 'Les pouces en avant – Kris Law'],
+  ['music/4-phenomenal.mp3', 'Il est vraiment phénoménal – Phenomenal Club'],
+  ['music/5-la-petite-culotte.mp3', 'La petite culotte – La Goffa Lolita'],
+  ['music/6-tonus.mp3', 'Tonus – Dudule']
+];
+const MUS = {
+  a:null, i:0, started:false, muted:store.get('x60-mute') === '1', target:.6, ft:null,
+  init(){ if (this.a) return; const a = this.a = new Audio(); a.preload = 'auto'; a.volume = 0;
+    a.addEventListener('ended', () => this.next()); a.addEventListener('error', () => { if (this.started) setTimeout(() => this.next(), 800); }); },
+  start(){ this.init(); if (this.started) return; this.started = true; this.i = 0; this.load(); },
+  load(){ this.a.src = PLAYLIST[this.i][0]; this.a.volume = 0; const pr = this.a.play(); if (pr && pr.catch) pr.catch(() => { this.started = false; }); this.fade(); musUI(); },
+  next(){ if (!this.a) return this.start(); this.i = (this.i + 1) % PLAYLIST.length; this.started = true; this.load(); },
+  duck(v){ this.target = v; this.fade(); },
+  fade(){ clearInterval(this.ft); const a = this.a; if (!a) return;
+    this.ft = setInterval(() => { const t = this.muted ? 0 : this.target, d = t - a.volume;
+      if (Math.abs(d) < .03) { a.volume = t; clearInterval(this.ft); return; } a.volume = Math.max(0, Math.min(1, a.volume + Math.sign(d) * .03)); }, 40); },
+  toggle(){ this.muted = !this.muted; store.set('x60-mute', this.muted ? '1' : '0'); if (!this.muted && !this.started) this.start(); this.fade(); musUI(); }
+};
+function musLevel(phase){ return phase === 'count' ? .18 : phase === 'podium' ? (H && H.drum ? .06 : .3) : (phase === 'question' || phase === 'reveal') ? .35 : .6; }
+function musUI(){
+  const b = document.getElementById('tb-mus');
+  if (b) { b.textContent = MUS.muted ? '🔇 Musique coupée' : '🎵 Musique'; b.classList.toggle('off', MUS.muted); b.title = PLAYLIST[MUS.i][1]; }
+  if (H) pushX();
+}
+// Si le navigateur a bloqué le son, la musique démarre au premier clic sur la TV.
+addEventListener('pointerdown', () => { if (H && !MUS.started && !MUS.muted) MUS.start(); }, true);
+
 /* ---------- Neige + confettis ---------- */
 const CONF = ['#ffd36e', '#ff7ab8', '#7fd6ff', '#3ddc97', '#b99bff', '#ff8a5c'];
 const FX = (function(){
@@ -546,6 +582,7 @@ function tvMode(phase){
   document.body.classList.add('tv'); PH.start();
   document.body.classList.toggle('party', ['home', 'lobby', 'count', 'intro', 'mend', 'podium'].includes(phase));
   document.body.classList.toggle('busy', ['question', 'reveal'].includes(phase));
+  if (H) MUS.duck(musLevel(phase));
 }
 
 /* ======================================================================
@@ -569,7 +606,7 @@ function showHome(){
 }
 
 function startHost(local, resume){
-  SFX.init();
+  SFX.init(); MUS.started = false; if (MUS.a) MUS.a.pause(); if (!MUS.muted) MUS.start();
   const sv = resume ? readSave() : null;
   if (sv) local = !!sv.local;
   const code = sv ? sv.code : String(1000 + Math.floor(Math.random() * 9000));
@@ -679,6 +716,7 @@ function doCmd(m){
   else if (c === 'skip' && H.phase === 'question') { H.res = {type:curQ().type, win:[], skipped:true}; H.phase = 'reveal'; }
   else if (c === 'menu' && H.phase !== 'lobby') { if (H.phase === 'question') H.ans = new Map(); H.phase = 'menu'; H.res = null; }
   else if (c === 'rank') { H.rank = !H.rank; renderRank(); pushX(); return; }
+  else if (c === 'music') { if (m.op === 'next') MUS.next(); else MUS.toggle(); pushX(); return; }
   else if (c === 'podium' && H.phase !== 'question') enterPodium();
   else if (c === 'pod' && H.phase === 'podium') { if (!podStepUp()) return; }
   else if (c === 'adj') {
@@ -728,7 +766,7 @@ function podStepUp(){
     else { SFX.reveal(); FX.burst(70); }
     eachP(sendState); renderTV(); pushX(); save();
   };
-  if (H.podStep === podTotal() - 1) { H.drum = true; SFX.drumroll(2.6); setTimeout(() => { if (H && H.phase === 'podium') finish(); }, 2700); return true; }
+  if (H.podStep === podTotal() - 1) { H.drum = true; MUS.duck(.06); SFX.drumroll(2.6); setTimeout(() => { if (H && H.phase === 'podium') finish(); }, 2700); return true; }
   finish(); return false;
 }
 
@@ -881,7 +919,7 @@ function xstate(){
   const s = {phase:H.phase, code:H.code, qid:H.qid, rank:H.rank, mi:H.mi, qi:H.qi,
     manches:H.M.map((m, i) => ({i, name:m.name, emoji:m.emoji, n:m.qs.length, done:H.done.has(m.id)})),
     players:ranking().map(p => ({k:p.key, name:p.name, score:p.score, on:p.on, ans:H.ans.has(p.key)})),
-    nans:H.ans.size, lastAll:!nextPos(), podStep:H.podStep, podTotal:H.players ? podTotal() : 0, drum:H.drum, podAll:!!H.podAll, non:[...H.players.values()].filter(p => p.on).length};
+    nans:H.ans.size, lastAll:!nextPos(), mus:{muted:MUS.muted, tr:PLAYLIST[MUS.i][1]}, podStep:H.podStep, podTotal:H.players ? podTotal() : 0, drum:H.drum, podAll:!!H.podAll, non:[...H.players.values()].filter(p => p.on).length};
   if (M) { s.mname = M.name; s.memoji = M.emoji; s.mlen = M.qs.length; }
   if (q && (H.phase === 'question' || H.phase === 'reveal')) {
     s.q = {type:q.type, q:q.q, a:q.a, v:q.v, img:!!q.img};
@@ -908,6 +946,7 @@ function renderRemote(root, s, send){
   const ae = document.activeElement;
   if (ae && ae.id === 'x-v' && root.contains(ae) && s.phase === 'question') { const c = root.querySelector('.xcount'); if (c) c.innerHTML = countTxt(s); return; }
   const tabs = `<div class="xtabs"><button data-tab="jeu" class="${XS.tab === 'jeu' ? 'on' : ''}">🎮 Le jeu</button><button data-tab="sc" class="${XS.tab === 'sc' ? 'on' : ''}">⚖️ Scores & contestations</button></div>`;
+  const mus = s.mus ? `<div class="xmus"><button class="btn ${s.mus.muted ? 'gold' : 'ghost'} sm" data-mus="mute">${s.mus.muted ? '🔊 Remettre la musique' : '🔇 Couper la musique'}</button><button class="btn ghost sm" data-mus="next" title="Musique suivante">⏭</button><span class="tr">🎵 ${esc(s.mus.tr)}</span></div>` : '';
   let h = '';
   if (XS.tab === 'sc') {
     h = `<div class="xbox"><p class="note">Xavier conteste ? Donne ou retire un point. Ça s’affiche sur la TV.</p>
@@ -962,13 +1001,14 @@ function renderRemote(root, s, send){
       <button class="btn gold block" data-cmd="next">${last ? 'Voir le podium 🏆' : 'Question suivante ▶'}</button>
       <button class="btn ghost block" data-cmd="lobby">Réafficher le QR code des invités</button></div>`;
   }
-  root.innerHTML = tabs + h;
+  root.innerHTML = tabs + mus + h;
   root.onclick = e => {
     const b = e.target.closest('button'); if (!b || b.disabled) return;
     if (b.dataset.tab) { XS.tab = b.dataset.tab; renderRemote(root, s, send); return; }
     if (b.dataset.sel != null) { const k = s.q && s.q.type === 'open' ? b.dataset.sel : Number(b.dataset.sel); XS.sel.has(k) ? XS.sel.delete(k) : XS.sel.add(k); renderRemote(root, s, send); return; }
     if (b.dataset.manche != null) { send({c:'manche', i:Number(b.dataset.manche)}); return; }
     if (b.dataset.adj) { send({c:'adj', k:b.dataset.k, d:Number(b.dataset.adj)}); return; }
+    if (b.dataset.mus) { send({c:'music', op:b.dataset.mus}); return; }
     const c = b.dataset.cmd; if (!c) return;
     if (c === 'reveal') send({c, sel:[...XS.sel], v:XS.v});
     else send({c});
@@ -1192,7 +1232,9 @@ $('#h-guest').onclick = () => startPlayer(null, false);
 $('#l-go').onclick = () => doCmd({c:'start'});
 $('#xav-show').onclick = () => { if (H) { H.xHidden = false; renderLobby(); } };
 $('#tb-rank').onclick = () => doCmd({c:'rank'});
-$('#tb-snd').onclick = () => { SFX.on = !SFX.on; $('#tb-snd').textContent = SFX.on ? '🔊' : '🔇'; };
+$('#tb-snd').onclick = () => { SFX.on = !SFX.on; $('#tb-snd').textContent = SFX.on ? '🔔' : '🔕'; };
+$('#tb-mus').onclick = () => doCmd({c:'music', op:'mute'});
+$('#tb-next').onclick = () => doCmd({c:'music', op:'next'});
 $('#tb-ctl').onclick = () => {
   if (!H) return; H.ctl = !H.ctl; $('#ctl').hidden = !H.ctl;
   if (H.ctl) { $('#ctl').innerHTML = '<button class="btn ghost sm close" id="ctl-x">Fermer ✕</button><h3 style="margin:6px 0 12px">🎮 Piloter depuis l’ordi</h3><div id="ctl-body" class="col"></div>'; $('#ctl-x').onclick = () => $('#tb-ctl').click(); pushX(); }
