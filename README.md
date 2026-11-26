@@ -20,7 +20,8 @@ Tout tient dans un seul fichier : `index.html`.
 2. Les invités scannent le grand QR code et tapent leur prénom.
 3. Xavier scanne le petit QR code « Télécommande de Xavier ».
 4. Xavier appuie sur **C'est parti !** : la TV affiche « Vous êtes prêts pour voyager avec Patrick ? », « C'est parti ! », un décompte 3, 2, 1, puis la première question.
-5. Après chaque révélation, **Question suivante**. Les questions s'enchaînent dans l'ordre de l'éditeur, puis le podium s'affiche tout seul à la fin.
+5. Après chaque révélation, **Question suivante**. Les questions s'enchaînent dans l'ordre de l'éditeur, puis le podium arrive à la fin.
+6. Le podium se dévoile petit à petit : à chaque appui, Xavier révèle la 3e place, puis la 2e, puis la 1re (avec roulement de tambour), et enfin le classement complet.
 
 En secours, le bouton **🎮 Piloter ici** de l'ordinateur ouvre la même télécommande sur l'écran de l'ordinateur.
 Si la page de la TV se recharge par erreur, **Reprendre la partie** garde les scores, et les invités se reconnectent tout seuls.

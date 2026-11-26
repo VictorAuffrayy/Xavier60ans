@@ -158,14 +158,21 @@ textarea{resize:vertical;min-height:54px}
 .rk .sc{font-weight:700;color:var(--sun)}
 .rk.top1{border-color:var(--sun);background:rgba(255,195,92,.15)}
 .podium{display:flex;align-items:flex-end;justify-content:center;gap:2vw;width:min(100%,1200px);margin-top:3vh}
-.pod{flex:1;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:10px;animation:zoomin .7s cubic-bezier(.2,1.4,.4,1) both}
+.pod{flex:1;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:10px}
 .pod .nm{font-size:clamp(20px,2.3vw,38px);font-weight:700}
 .pod .md{font-size:clamp(40px,5vw,80px)}
 .pod .blk{width:100%;border-radius:20px 20px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:16px;font-family:'Bowlby One',Fredoka,sans-serif;font-size:clamp(26px,3vw,50px);color:var(--ink)}
 .pod.p1 .blk{height:30vh;background:linear-gradient(180deg,#ffe2a1,#ffb93f)}
 .pod.p2 .blk{height:21vh;background:linear-gradient(180deg,#f3fbff,#a9cde6)}
 .pod.p3 .blk{height:15vh;background:linear-gradient(180deg,#ffd0b0,#d98b5b)}
-.pod.p1{animation-delay:.9s}.pod.p2{animation-delay:.45s}
+.pod.hid .md,.pod.hid .nm{visibility:hidden}
+.pod.hid .blk{filter:saturate(.2) brightness(.55);color:rgba(6,20,44,.6)}
+.pod.rev .md,.pod.rev .nm{animation:zoomin .7s cubic-bezier(.2,1.5,.4,1) both}
+.pod.rev .blk{animation:glow 1.6s ease-out}
+@keyframes glow{0%{box-shadow:0 0 0 0 rgba(255,211,110,.9)}100%{box-shadow:0 0 0 40px rgba(255,211,110,0)}}
+.podq{font-size:clamp(24px,2.8vw,44px);font-weight:700;color:var(--glacier);min-height:1.3em}
+.drum{font-size:clamp(30px,3.6vw,58px);font-weight:700;color:var(--sun);animation:drum .18s ease-in-out infinite alternate}
+@keyframes drum{from{transform:scale(1) rotate(-1.5deg)}to{transform:scale(1.06) rotate(1.5deg)}}
 .crown{font-size:clamp(24px,3vw,46px);font-weight:700;color:var(--sun);text-shadow:0 0 30px rgba(255,195,92,.6)}
 #rank-ov{position:fixed;inset:0;z-index:30;background:rgba(5,13,31,.88);backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:4vh 4vw}
 #toast{position:fixed;left:50%;top:14vh;transform:translateX(-50%);z-index:40;background:linear-gradient(135deg,#ffe2a1,#ffb93f);color:var(--ink);font-weight:700;font-size:clamp(22px,2.6vw,42px);border-radius:22px;padding:18px 34px;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:toast 3.4s ease forwards;text-align:center;max-width:90vw}
@@ -480,6 +487,7 @@ const SFX = {
   whoosh(){ [392, 523, 659].forEach((f, i) => this.tone(f, .3, i * .07, 'triangle', .12)); },
   reveal(){ [523, 659, 784, 1047].forEach((f, i) => this.tone(f, .35, i * .09, 'triangle')); },
   contest(){ this.tone(330, .18, 0, 'square', .07); this.tone(440, .3, .16, 'square', .07); },
+  drumroll(d){ const n = Math.floor(d / .055); for (let i = 0; i < n; i++) this.tone(110 + Math.random() * 30, .07, i * .055, 'square', .03 + .09 * i / n); this.tone(1800, .6, d, 'triangle', .12); },
   fanfare(){ [[523,0],[659,.15],[784,.3],[1047,.5],[784,.7],[1047,.85]].forEach(([f, t]) => this.tone(f, .45, t, 'triangle', .14)); }
 };
 
@@ -567,7 +575,7 @@ function startHost(local, resume){
   const code = sv ? sv.code : String(1000 + Math.floor(Math.random() * 9000));
   H = {code, pin:sv ? sv.pin : rid() + rid(), local, players:new Map(), pid2key:new Map(), remotes:new Set(),
        phase:'lobby', M:loadQs().map(m => ({id:m.id || rid(), name:m.name || 'Manche', emoji:m.emoji || '⭐', qs:(m.qs || []).map(normQ).filter(validQ)})),
-       mi:-1, qi:-1, qid:null, ans:new Map(), res:null, done:new Set(sv ? sv.done : []), rank:false, xHidden:false, ctl:false, cd:0, cdRun:0};
+       mi:-1, qi:-1, qid:null, ans:new Map(), res:null, done:new Set(sv ? sv.done : []), rank:false, xHidden:false, ctl:false, cd:0, cdRun:0, podStep:0, drum:false};
   if (sv && Number.isInteger(sv.mi)) { H.mi = sv.mi; H.qi = Number.isInteger(sv.qi) ? sv.qi : -1; }
   if (sv) sv.players.forEach(([name, score]) => { const key = name.toLowerCase(); H.players.set(key, {name, key, score:score | 0, on:false, pid:null}); });
   if (!sv) save();
@@ -640,7 +648,7 @@ function qPayload(){
 function sendState(p){
   if (H.phase === 'question') sendP(p, Object.assign(qPayload(), {mine:H.ans.has(p.key) ? H.ans.get(p.key) : null}));
   else if (H.phase === 'reveal' && H.res) sendP(p, resFor(p));
-  else if (H.phase === 'podium') sendP(p, endFor(p));
+  else if (H.phase === 'podium') { if (H.podStep >= podTotal()) sendP(p, endFor(p)); else sendP(p, {t:'wait', msg:'🥁 Le podium se dévoile… Regardez la TV !', score:p.score}); }
   else sendP(p, {t:'wait', msg:waitMsg(), score:p.score});
 }
 function waitMsg(){
@@ -671,7 +679,8 @@ function doCmd(m){
   else if (c === 'skip' && H.phase === 'question') { H.res = {type:curQ().type, win:[], skipped:true}; H.phase = 'reveal'; }
   else if (c === 'menu' && H.phase !== 'lobby') { if (H.phase === 'question') H.ans = new Map(); H.phase = 'menu'; H.res = null; }
   else if (c === 'rank') { H.rank = !H.rank; renderRank(); pushX(); return; }
-  else if (c === 'podium' && H.phase !== 'question') { H.phase = 'podium'; H.rank = false; renderRank(); SFX.fanfare(); FX.burst(260); setTimeout(() => FX.burst(200), 1300); }
+  else if (c === 'podium' && H.phase !== 'question') enterPodium();
+  else if (c === 'pod' && H.phase === 'podium') { if (!podStepUp()) return; }
   else if (c === 'adj') {
     const p = H.players.get(String(m.k)), d = m.d > 0 ? 1 : -1;
     if (!p || (d < 0 && p.score <= 0)) return;
@@ -707,6 +716,22 @@ function startCountdown(){
   step();
 }
 
+/* Podium révélé petit à petit : 3e, puis 2e, puis roulement de tambour et 1er. */
+const podTotal = () => Math.min(3, H.players.size);
+function enterPodium(){ H.phase = 'podium'; H.rank = false; H.res = null; H.podStep = 0; H.drum = false; H.podAll = false; renderRank(); SFX.whoosh(); }
+function podStepUp(){
+  if (H.drum || H.podAll) return false;
+  if (H.podStep >= podTotal()) { H.podAll = true; SFX.whoosh(); FX.burst(120); return true; }
+  const finish = () => {
+    H.drum = false; H.podStep++;
+    if (H.podStep >= podTotal()) { SFX.fanfare(); FX.burst(260); setTimeout(() => FX.burst(220), 1200); setTimeout(() => FX.burst(180), 2600); }
+    else { SFX.reveal(); FX.burst(70); }
+    eachP(sendState); renderTV(); pushX(); save();
+  };
+  if (H.podStep === podTotal() - 1) { H.drum = true; SFX.drumroll(2.6); setTimeout(() => { if (H && H.phase === 'podium') finish(); }, 2700); return true; }
+  finish(); return false;
+}
+
 /* Enchaîne les questions dans l'ordre, manche après manche, puis le podium. */
 function nextPos(){
   let mi = H.mi < 0 ? 0 : H.mi, qi = H.mi < 0 ? 0 : H.qi + 1;
@@ -716,7 +741,7 @@ function nextPos(){
 function advance(){
   const n = nextPos();
   if (H.mi >= 0 && curM() && (!n || n.mi !== H.mi)) H.done.add(curM().id);
-  if (!n) { H.phase = 'podium'; H.rank = false; H.res = null; renderRank(); SFX.fanfare(); FX.burst(260); setTimeout(() => FX.burst(200), 1300); return; }
+  if (!n) { enterPodium(); return; }
   H.mi = n.mi; H.qi = n.qi; askQ();
 }
 function askQ(){
@@ -765,14 +790,22 @@ function renderTV(){
     updateCount();
   } else if (H.phase === 'mend') {
     g.innerHTML = `<h2 class="tvh">${esc(M.emoji)} Fin de la manche « ${esc(M.name)} »</h2><p class="sub">Le classement provisoire :</p>${rankHTML(12)}`;
+  } else if (H.phase === 'podium' && H.podAll) {
+    g.innerHTML = `<h2 class="tvh">📋 Le classement complet</h2>${rankHTML(30)}<h2 class="hbd sm" style="margin-top:2vh">Joyeux Anniversaire Patrick ! 🎂</h2>`;
   } else if (H.phase === 'podium') {
     const rk = ranking(), top = rk.slice(0, 3);
     const lead = rk.length ? rk.filter(p => p.score === rk[0].score) : [];
-    const slot = (p, i) => p ? `<div class="pod p${i + 1}"><span class="md">${['🥇','🥈','🥉'][tieRank(p) - 1] || '🏅'}</span><span class="nm">${esc(p.name)}</span><div class="blk">${p.score}</div></div>` : '<div class="pod"></div>';
+    const tot = podTotal(), done = H.podStep >= tot;
+    const shown = i => i >= tot - H.podStep, justNow = i => i === tot - H.podStep;
+    const slot = (p, i) => p ? `<div class="pod p${i + 1} ${shown(i) ? (justNow(i) ? 'rev' : '') : 'hid'}"><span class="md">${['🥇','🥈','🥉'][tieRank(p) - 1] || '🏅'}</span><span class="nm">${esc(p.name)}</span><div class="blk">${shown(i) ? plural(p.score, 'pt') : '?'}</div></div>` : '<div class="pod"></div>';
+    const place = ['1re', '2e', '3e'][tot - H.podStep - 1];
+    const top_ = H.drum ? `<div class="drum">🥁 Roulement de tambour… 🥁</div>`
+      : done ? (lead.length ? `<div class="crown">${lead.length > 1 ? 'Meilleurs connaisseurs de Xavier : ' + lead.map(p => esc(p.name)).join(' et ') + ' !' : 'Meilleur connaisseur de Xavier : ' + esc(lead[0].name) + ' !'}</div>` : '')
+      : `<div class="podq">${H.podStep === 0 ? 'Qui sera le meilleur connaisseur de Xavier ? 🤔' : 'Et à la ' + place + ' place…'}</div>`;
     g.innerHTML = `<h2 class="tvh">🏆 Le podium final</h2>
-      ${lead.length ? `<div class="crown">${lead.length > 1 ? 'Meilleurs connaisseurs de Xavier : ' + lead.map(p => esc(p.name)).join(' et ') + ' !' : 'Meilleur connaisseur de Xavier : ' + esc(lead[0].name) + ' !'}</div>` : ''}
+      ${top_}
       <div class="podium">${slot(top[1], 1)}${slot(top[0], 0)}${slot(top[2], 2)}</div>
-      <h2 class="hbd sm" style="margin-top:2vh">Joyeux Anniversaire Patrick ! 🎂</h2>`;
+      ${done ? '<h2 class="hbd sm" style="margin-top:2vh">Joyeux Anniversaire Patrick ! 🎂</h2>' : ''}`;
   }
 }
 function viewQ(){
@@ -848,7 +881,7 @@ function xstate(){
   const s = {phase:H.phase, code:H.code, qid:H.qid, rank:H.rank, mi:H.mi, qi:H.qi,
     manches:H.M.map((m, i) => ({i, name:m.name, emoji:m.emoji, n:m.qs.length, done:H.done.has(m.id)})),
     players:ranking().map(p => ({k:p.key, name:p.name, score:p.score, on:p.on, ans:H.ans.has(p.key)})),
-    nans:H.ans.size, lastAll:!nextPos(), non:[...H.players.values()].filter(p => p.on).length};
+    nans:H.ans.size, lastAll:!nextPos(), podStep:H.podStep, podTotal:H.players ? podTotal() : 0, drum:H.drum, podAll:!!H.podAll, non:[...H.players.values()].filter(p => p.on).length};
   if (M) { s.mname = M.name; s.memoji = M.emoji; s.mlen = M.qs.length; }
   if (q && (H.phase === 'question' || H.phase === 'reveal')) {
     s.q = {type:q.type, q:q.q, a:q.a, v:q.v, img:!!q.img};
@@ -888,8 +921,13 @@ function renderRemote(root, s, send){
   } else if (s.phase === 'count') {
     h = `<div class="xbox"><h2>✈️ C’est parti !</h2><p class="note">Le décompte est sur la TV, la première question arrive.</p></div>`;
   } else if (s.phase === 'podium') {
-    h = `<div class="xbox"><h2>🏆 Le podium est affiché !</h2><p class="note">Toutes les questions sont passées. Joyeux anniversaire ! 🎂</p>
-      <p class="note">Une erreur dans les scores ? Onglet « Scores & contestations » : le podium se met à jour.</p></div>`;
+    const left = s.podTotal - s.podStep, place = ['1re', '2e', '3e'][left - 1];
+    h = left > 0 ? `<div class="xbox"><h2>🏆 Le podium</h2><p class="note">Révèle les places une par une, à ton rythme. La 1re place a droit à son roulement de tambour 🥁</p>
+      <button class="btn gold block" data-cmd="pod" ${s.drum ? 'disabled' : ''}>${s.drum ? '🥁 Roulement de tambour…' : 'Révéler la ' + place + ' place ' + (left === 1 ? '🥁' : '▶')}</button></div>`
+      : !s.podAll ? `<div class="xbox"><h2>🏆 Le podium est complet !</h2><p class="note">Dernière étape : le classement de tous les joueurs.</p>
+      <button class="btn gold block" data-cmd="pod">Afficher le classement complet 📋</button></div>`
+      : `<div class="xbox"><h2>📋 Le classement complet est affiché !</h2><p class="note">Toutes les questions sont passées. Joyeux anniversaire ! 🎂</p>
+      <p class="note">Une erreur dans les scores ? Onglet « Scores & contestations » : le classement se met à jour.</p></div>`;
   } else if (s.phase === 'intro') {
     h = `<div class="xbox"><h2>${esc(s.memoji)} ${esc(s.mname)}</h2><p class="note">${plural(s.mlen, 'question')}. Le titre de la manche est sur la TV.</p>
       <button class="btn gold block" data-cmd="next">Première question ▶</button>
